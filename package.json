@@ -2,8 +2,10 @@
   "name": "react-pdf-printer",
   "version": "1.0.0",
   "description": "Create pdf document using React",
-  "main": "index.js",
+  "main": "dist",
+  "module": "dist/index.es.js",
   "scripts": {
+    "build": "rollup -c",
     "format": "prettier --write .",
     "prepare": "husky install"
   },
@@ -16,6 +18,9 @@
   ],
   "author": "Jan Krupiński",
   "license": "MIT",
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@babel/core": "^7.17.9",
     "@babel/preset-react": "^7.16.7",
@@ -32,6 +37,8 @@
     "rollup": "^2.70.1",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-terser": "^7.0.2",
     "typescript": "^4.6.3"
   },
   "peerDependencies": {
