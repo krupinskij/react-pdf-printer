@@ -1,12 +1,13 @@
 import React from 'react';
 
-interface PageProps {
-  header: React.ReactNode;
-  footer: React.ReactNode;
+export interface Props {
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
+  children: React.ReactNode;
 }
 
-const Page = ({ header, footer }: PageProps) => {
-  return <div></div>;
+const Page = ({ header, footer }: Props) => {
+  return <section data-printer-type="page"></section>;
 };
 
 export default Page;

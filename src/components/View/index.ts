@@ -1,1 +1,1 @@
-export { default } from './View';
+export { default, type Props as ViewProps } from './View';

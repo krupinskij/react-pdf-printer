@@ -1,12 +1,13 @@
 import React from 'react';
 
-interface ViewProps {
-  header: React.ReactNode;
-  footer: React.ReactNode;
+export interface Props {
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
+  children: React.ReactNode;
 }
 
-const View = ({ header, footer }: ViewProps) => {
-  return <div></div>;
+const View = ({ header, footer }: Props) => {
+  return <div data-printer-type="view"></div>;
 };
 
 export default View;
