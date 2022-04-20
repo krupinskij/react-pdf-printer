@@ -4,7 +4,8 @@
   "description": "Create pdf document using React",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "format": "prettier --write .",
+    "prepare": "husky install"
   },
   "keywords": [
     "pdf",
@@ -19,9 +20,13 @@
     "@babel/core": "^7.17.9",
     "@babel/preset-react": "^7.16.7",
     "@rollup/plugin-node-resolve": "^13.2.0",
+    "@trivago/prettier-plugin-sort-imports": "^3.2.0",
     "@types/react": "^18.0.5",
     "@types/react-dom": "^18.0.0",
     "babel-loader": "^8.2.4",
+    "husky": "^7.0.0",
+    "prettier": "^2.6.2",
+    "pretty-quick": "^3.1.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "rollup": "^2.70.1",

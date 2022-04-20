@@ -1,1 +1,2 @@
-export { default, type Props as PageProps } from './Page';
+export { default } from './Page';
+export type { Props as PageProps } from './Page';

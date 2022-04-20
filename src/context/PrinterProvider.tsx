@@ -1,4 +1,5 @@
 import React from 'react';
+
 import PrinterContext, { PrinterContextValue } from './PrinterContext';
 
 interface DocumentProviderProps {

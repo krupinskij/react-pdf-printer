@@ -1,4 +1,5 @@
 import React, { ReactNode, ReactElement } from 'react';
+
 import DocumentProvider from '../../context/PrinterProvider';
 import Page, { PageProps } from '../Page';
 import View, { ViewProps } from '../View';
@@ -10,7 +11,7 @@ interface Props {
 }
 
 const Document = ({ header, footer, children }: Props) => {
-  const documentChildren = React.Children.map(children, child => {
+  const documentChildren = React.Children.map(children, (child) => {
     if (
       !React.isValidElement<PageProps | ViewProps>(child) ||
       child.type !== Page ||
