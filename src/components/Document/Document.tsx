@@ -1,6 +1,7 @@
 import React, { ReactNode, ReactElement } from 'react';
 
-import DocumentProvider from '../../context/PrinterProvider';
+import DocumentProvider from 'context/PrinterProvider';
+
 import Page, { PageProps } from '../Page';
 import View, { ViewProps } from '../View';
 
