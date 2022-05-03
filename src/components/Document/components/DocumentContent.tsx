@@ -6,6 +6,8 @@ type Props = {
   children: React.ReactNode;
 };
 
+const a4Height = 1122.519685;
+
 const DocumentContent = ({ children }: Props) => {
   const documentRef = useRef<HTMLDivElement>(null);
   const { isLoading } = useContext<PrinterContextValue>(PrinterContext)!;
@@ -13,24 +15,53 @@ const DocumentContent = ({ children }: Props) => {
   useLayoutEffect(() => {
     if (isLoading || !documentRef.current) return;
 
-    const contentElements = documentRef.current.querySelectorAll(
+    const articles = documentRef.current.querySelectorAll(
       '[data-printer-type="page"], [data-printer-type="view"]'
     );
-    console.log(contentElements);
-    contentElements.forEach((element) => {
-      const header = element.querySelector('[data-printer-segment="header"]');
-      const footer = element.querySelector('[data-printer-segment="footer"]');
-      const content = element.querySelector<HTMLElement>('[data-printer-segment="content"]');
+    articles.forEach((article) => {
+      const header = article.querySelector<HTMLElement>('[data-printer-segment="header"]');
+      const footer = article.querySelector<HTMLElement>('[data-printer-segment="footer"]');
+      const content = article.querySelector<HTMLElement>('[data-printer-segment="content"]');
 
-      const headerHeight = header?.clientHeight || 0;
-      const footerHeight = footer?.clientHeight || 0;
-      const contentHeight = window.innerHeight - (headerHeight + footerHeight);
+      if (!content || !header || !footer) return;
 
-      console.log(content);
+      const headerHeight = header.clientHeight || 0;
+      const footerHeight = footer.clientHeight || 0;
 
-      if (!content) return;
-
+      header.style.top = '0px';
+      footer.style.top = `calc(100vh - ${footerHeight}px)`;
       content.style.marginTop = `${headerHeight}px`;
+
+      const divisableElements = content.querySelectorAll<HTMLElement>('[data-printer-divisable]');
+      divisableElements.forEach((divisableElement) => {
+        const distanceFromTop = a4Height - footerHeight;
+
+        const clientRect = divisableElement.getBoundingClientRect();
+        if (clientRect.top < distanceFromTop && clientRect.bottom > distanceFromTop) {
+          const children = divisableElement.childNodes as NodeListOf<HTMLElement>;
+          let childDistFromTop = distanceFromTop;
+          let counter = 0;
+          children.forEach((child) => {
+            const childClientRect = child.getBoundingClientRect();
+            if (
+              childClientRect.top < childDistFromTop &&
+              childClientRect.bottom > childDistFromTop
+            ) {
+              child.style.paddingTop = `${headerHeight}px`;
+              (child.previousSibling as HTMLElement).style.breakAfter = 'page';
+              childDistFromTop += a4Height - footerHeight;
+              counter++;
+              const newHeader = header.cloneNode(true) as HTMLElement;
+              newHeader.style.top = `${counter * 100}vh`;
+              article.appendChild(newHeader);
+
+              const newFooter = footer.cloneNode(true) as HTMLElement;
+              newFooter.style.top = `calc(${(counter + 1) * 100}vh - ${footerHeight}px)`;
+              article.appendChild(newFooter);
+            }
+          });
+        }
+      });
     });
   }, [isLoading]);
   return <div ref={documentRef}>{children}</div>;
