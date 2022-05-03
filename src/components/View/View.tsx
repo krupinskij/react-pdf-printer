@@ -6,8 +6,14 @@ export interface Props {
   children: React.ReactNode;
 }
 
-const View = ({ header, footer }: Props) => {
-  return <div data-printer-type="view"></div>;
+const View = ({ header, footer, children }: Props) => {
+  return (
+    <div data-printer-type="view">
+      <article data-printer-segment="header">{header}</article>
+      <article data-printer-segment="footer">{footer}</article>
+      <article data-printer-segment="content">{children}</article>
+    </div>
+  );
 };
 
 export default View;

@@ -4,6 +4,7 @@ import DocumentProvider from 'context/PrinterProvider';
 
 import Page, { PageProps } from '../Page';
 import View, { ViewProps } from '../View';
+import DocumentContent from './components/DocumentContent';
 
 interface Props {
   header: ReactNode;
@@ -27,7 +28,12 @@ const Document = ({ header, footer, children }: Props) => {
     };
     return React.cloneElement(child, props);
   });
-  return <DocumentProvider>{documentChildren}</DocumentProvider>;
+
+  return (
+    <DocumentProvider>
+      <DocumentContent>{documentChildren}</DocumentContent>
+    </DocumentProvider>
+  );
 };
 
 export default Document;

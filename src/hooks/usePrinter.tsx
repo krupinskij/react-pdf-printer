@@ -5,7 +5,7 @@ import PrinterContext, { PrinterContextValue } from 'context/PrinterContext';
 type UsePrinterType = Omit<PrinterContextValue, 'isLoading'>;
 
 const usePrinter = (): UsePrinterType => {
-  const contextValue = useContext<PrinterContextValue | null>(PrinterContext);
+  const contextValue = useContext<PrinterContextValue>(PrinterContext);
   if (!contextValue) {
     return {
       isPrinter: false,
