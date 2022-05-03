@@ -16,6 +16,7 @@ const DocumentContent = ({ children }: Props) => {
     const contentElements = documentRef.current.querySelectorAll(
       '[data-printer-type="page"], [data-printer-type="view"]'
     );
+    console.log(contentElements);
     contentElements.forEach((element) => {
       const header = element.querySelector('[data-printer-segment="header"]');
       const footer = element.querySelector('[data-printer-segment="footer"]');
@@ -24,6 +25,8 @@ const DocumentContent = ({ children }: Props) => {
       const headerHeight = header?.clientHeight || 0;
       const footerHeight = footer?.clientHeight || 0;
       const contentHeight = window.innerHeight - (headerHeight + footerHeight);
+
+      console.log(content);
 
       if (!content) return;
 

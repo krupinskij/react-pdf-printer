@@ -2,22 +2,27 @@ import React, { ReactNode, ReactElement } from 'react';
 
 import DocumentProvider from 'context/PrinterProvider';
 
-import Page, { PageProps } from '../Page';
-import View, { ViewProps } from '../View';
 import DocumentContent from './components/DocumentContent';
+import Page from './components/Page';
+import View from './components/View';
+import { ArticleProps } from './model';
 
-interface Props {
+type DocumentProps = {
   header: ReactNode;
   footer: ReactNode;
-  children: ReactElement<PageProps | ViewProps> | Array<ReactElement<PageProps | ViewProps>>;
-}
+  children: ReactElement<ArticleProps> | Array<ReactElement<ArticleProps>>;
+};
 
-const Document = ({ header, footer, children }: Props) => {
+const Document = ({ header, footer, children }: DocumentProps) => {
   const documentChildren = React.Children.map(children, (child) => {
-    if (
-      !React.isValidElement<PageProps | ViewProps>(child) ||
-      child.type !== Page ||
+    console.log(
+      !React.isValidElement<ArticleProps>(child),
+      child.type !== Page,
       child.type !== View
+    );
+    if (
+      !React.isValidElement<ArticleProps>(child) ||
+      (child.type !== Page && child.type !== View)
     ) {
       throw Error('Page and View are the only valid Document child components.');
     }
