@@ -15,7 +15,7 @@ const DocumentContent = ({ children }: Props) => {
   useLayoutEffect(() => {
     if (isLoading || !documentRef.current) return;
 
-    const articles = documentRef.current.querySelectorAll(
+    const articles = documentRef.current.querySelectorAll<HTMLElement>(
       '[data-printer-type="page"], [data-printer-type="view"]'
     );
     articles.forEach((article) => {
@@ -31,6 +31,8 @@ const DocumentContent = ({ children }: Props) => {
       header.style.top = '0px';
       footer.style.top = `calc(100vh - ${footerHeight}px)`;
       content.style.marginTop = `${headerHeight}px`;
+
+      if (article.dataset.printerType === 'page') return;
 
       const divisableElements = content.querySelectorAll<HTMLElement>('[data-printer-divisable]');
       divisableElements.forEach((divisableElement) => {
