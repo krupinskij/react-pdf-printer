@@ -34,7 +34,7 @@ const PrinterProvider = ({ children }: Props) => {
   const value: PrinterContextValue = {
     isPrinter: true,
     subscribe,
-    isLoading: Object.values(state).every((value) => value),
+    isLoading: !Object.values(state).every((value) => value),
   };
 
   return <PrinterContext.Provider value={value}>{children}</PrinterContext.Provider>;
