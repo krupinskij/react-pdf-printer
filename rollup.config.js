@@ -1,12 +1,9 @@
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import commonJS from 'rollup-plugin-commonjs';
-import copy from 'rollup-plugin-copy';
 import dts from 'rollup-plugin-dts';
-import css from 'rollup-plugin-import-css';
 import external from 'rollup-plugin-peer-deps-external';
 import postcss from 'rollup-plugin-postcss';
-import styles from 'rollup-plugin-styles';
 import { terser } from 'rollup-plugin-terser';
 
 const packageJSON = require('./package.json');

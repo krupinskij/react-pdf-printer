@@ -15,6 +15,5 @@
     "declarationDir": "types",
     "emitDeclarationOnly": true,
     "baseUrl": "src",
-  },
-  "exclude": ["./style.css"]
+  }
 }
