@@ -8,6 +8,14 @@ import { terser } from 'rollup-plugin-terser';
 
 const packageJSON = require('./package.json');
 
+const resolveNonExternals = ({ dir = '', extension = '', nonExternals = [] }) => ({
+  resolveId: (source) => {
+    if (nonExternals.some((nonExternal) => source.startsWith(nonExternal))) {
+      return `${dir}/${source}${extension}`;
+    }
+  },
+});
+
 export default [
   {
     input: 'src/index.ts',
@@ -28,7 +36,9 @@ export default [
       external(),
       resolve(),
       commonJS(),
-      typescript({ tsconfig: './tsconfig.json' }),
+      typescript({
+        tsconfig: './tsconfig.json',
+      }),
       postcss(),
       terser(),
     ],
@@ -42,6 +52,14 @@ export default [
     input: 'dist/esm/types/index.d.ts',
     output: [{ file: 'dist/index.d.ts', format: 'esm' }],
     external: [/\/.css$/u],
-    plugins: [dts(), postcss()],
+    plugins: [
+      resolveNonExternals({
+        dir: 'dist/esm/types',
+        extension: '.d.ts',
+        nonExternals: ['components', 'context', 'hooks'],
+      }),
+      dts(),
+      postcss(),
+    ],
   },
 ];
