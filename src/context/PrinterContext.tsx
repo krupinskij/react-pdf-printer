@@ -4,8 +4,8 @@ export type PrinterContextValue = {
   isPrinter: boolean;
   isLoading: boolean;
   subscribe: (key: string) => () => void;
-} | null;
+};
 
-const PrinterContext = createContext<PrinterContextValue>(null);
+const PrinterContext = createContext<PrinterContextValue | null>(null);
 
 export default PrinterContext;

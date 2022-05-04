@@ -13,7 +13,7 @@ type Props = {
 
 const DocumentContent = ({ children, size, orientation }: Props) => {
   const documentRef = useRef<HTMLDivElement>(null);
-  const { isLoading } = useContext<PrinterContextValue>(PrinterContext)!;
+  const { isLoading } = useContext<PrinterContextValue | null>(PrinterContext)!;
   const { height } = usePageDimensions(size, orientation);
 
   useLayoutEffect(() => {
