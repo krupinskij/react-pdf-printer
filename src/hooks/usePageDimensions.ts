@@ -31,8 +31,8 @@ const setSizeCSSValue = (size: string) => {
 const findCssRule = (cssRules: CSSRuleList, size: string) => {
   for (let i = 0; i < cssRules.length; i++) {
     const cssRule = cssRules[i] as any;
-    if (!(cssRule as any).cssRules) {
-      (cssRule as any).style.size = size;
+    if (!cssRule.cssRules) {
+      cssRule.style.size = size;
       return;
     }
     if (!cssRule.cssText.includes('@page')) continue;
