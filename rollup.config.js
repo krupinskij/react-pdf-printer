@@ -34,9 +34,14 @@ export default [
     ],
   },
   {
+    input: 'src/style.css',
+    output: [{ dir: 'dist/esm/types' }],
+    plugins: [postcss({ extract: 'style.css' })],
+  },
+  {
     input: 'dist/esm/types/index.d.ts',
     output: [{ file: 'dist/index.d.ts', format: 'esm' }],
-    external: [/\/css$/],
-    plugins: [dts()],
+    external: [/\/.css$/u],
+    plugins: [dts(), postcss()],
   },
 ];

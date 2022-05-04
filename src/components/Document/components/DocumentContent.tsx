@@ -1,16 +1,20 @@
 import React, { useContext, useLayoutEffect, useRef } from 'react';
 
 import PrinterContext, { PrinterContextValue } from 'context/PrinterContext';
+import usePageDimensions from 'hooks/usePageDimensions';
+
+import { DocumentConfiguration, Orientation, Size } from '../model';
 
 type Props = {
   children: React.ReactNode;
+  size: Size;
+  orientation: Orientation;
 };
 
-const a4Height = 1122.519685;
-
-const DocumentContent = ({ children }: Props) => {
+const DocumentContent = ({ children, size, orientation }: Props) => {
   const documentRef = useRef<HTMLDivElement>(null);
   const { isLoading } = useContext<PrinterContextValue>(PrinterContext)!;
+  const { height } = usePageDimensions(size, orientation);
 
   useLayoutEffect(() => {
     if (isLoading || !documentRef.current) return;
@@ -36,7 +40,7 @@ const DocumentContent = ({ children }: Props) => {
 
       const divisableElements = content.querySelectorAll<HTMLElement>('[data-printer-divisable]');
       divisableElements.forEach((divisableElement) => {
-        const distanceFromTop = a4Height - footerHeight;
+        const distanceFromTop = height - footerHeight;
 
         const clientRect = divisableElement.getBoundingClientRect();
         if (clientRect.top < distanceFromTop && clientRect.bottom > distanceFromTop) {
@@ -51,7 +55,7 @@ const DocumentContent = ({ children }: Props) => {
             ) {
               child.style.paddingTop = `${headerHeight}px`;
               (child.previousSibling as HTMLElement).style.breakAfter = 'page';
-              childDistFromTop += a4Height - footerHeight;
+              childDistFromTop += height - footerHeight;
               counter++;
               const newHeader = header.cloneNode(true) as HTMLElement;
               newHeader.style.top = `${counter * 100}vh`;
@@ -65,7 +69,7 @@ const DocumentContent = ({ children }: Props) => {
         }
       });
     });
-  }, [isLoading]);
+  }, [isLoading, height]);
   return <div ref={documentRef}>{children}</div>;
 };
 

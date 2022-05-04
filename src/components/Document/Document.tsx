@@ -5,15 +5,18 @@ import DocumentProvider from 'context/PrinterProvider';
 import DocumentContent from './components/DocumentContent';
 import Page from './components/Page';
 import View from './components/View';
-import { ArticleProps } from './model';
+import { ArticleProps, DocumentConfiguration } from './model';
 
 type DocumentProps = {
   header: ReactNode;
   footer: ReactNode;
   children: ReactElement<ArticleProps> | Array<ReactElement<ArticleProps>>;
+  configuration?: DocumentConfiguration;
 };
 
-const Document = ({ header, footer, children }: DocumentProps) => {
+const Document = ({ header, footer, children, configuration }: DocumentProps) => {
+  const { size = 'a4', orientation = 'portrait' } = configuration || {};
+
   const documentChildren = React.Children.map(children, (child) => {
     console.log(
       !React.isValidElement<ArticleProps>(child),
@@ -36,7 +39,9 @@ const Document = ({ header, footer, children }: DocumentProps) => {
 
   return (
     <DocumentProvider>
-      <DocumentContent>{documentChildren}</DocumentContent>
+      <DocumentContent size={size} orientation={orientation}>
+        {documentChildren}
+      </DocumentContent>
     </DocumentProvider>
   );
 };
