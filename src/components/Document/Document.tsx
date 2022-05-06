@@ -16,7 +16,6 @@ type DocumentProps = {
 
 const Document = ({ header, footer, children, configuration }: DocumentProps) => {
   const { size = 'a4', orientation = 'portrait', pagination = {} } = configuration || {};
-  const { format = '#p / #c', formatPage = '#p', formatCount = '#c' } = pagination;
 
   const documentChildren = React.Children.map(children, (child) => {
     if (
@@ -33,16 +32,9 @@ const Document = ({ header, footer, children, configuration }: DocumentProps) =>
     return React.cloneElement(child, props);
   });
 
-  useEffect(() => {
-    document.documentElement.style.setProperty(
-      '--pagination-content',
-      `'${format.replaceAll(formatPage, "'counter(printer-page)'")}'`
-    );
-  }, [format, formatPage, formatCount]);
-
   return (
     <DocumentProvider>
-      <DocumentContent size={size} orientation={orientation} formatCount={formatCount}>
+      <DocumentContent size={size} orientation={orientation} pagination={pagination}>
         {documentChildren}
       </DocumentContent>
     </DocumentProvider>

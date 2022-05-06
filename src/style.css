@@ -10,11 +10,8 @@
   }
 }
 
-:root {
-  --pagination-content: '';
-}
-
 [data-printer-type='document'] {
+  --pagination-content: '';
   counter-reset: printer-page;
 }
 
