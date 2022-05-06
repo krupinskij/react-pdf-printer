@@ -71,8 +71,6 @@ const DocumentContent = ({ children, size, orientation, pagination }: Props) => 
               const newFooter = footer.cloneNode(true) as HTMLElement;
               newFooter.style.top = `calc(${(pagesCount + 1) * 100}vh - ${footerHeight}px)`;
               article.appendChild(newFooter);
-            } else {
-              child.innerText += ` ${childClientRect.top} ${childClientRect.bottom} ${childDistFromTop}`;
             }
           });
         }

@@ -15,7 +15,22 @@
   counter-reset: printer-page;
 }
 
+[data-printer-type='page'] {
+  height: 100vh;
+  overflow-y: hidden;
+}
+
+[data-printer-type='page']:not(:last-child),
+[data-printer-type='view']:not(:last-child) {
+  break-after: page;
+}
+
+[data-printer-component='header'] {
+  position: absolute;
+}
+
 [data-printer-component='footer'] {
+  position: absolute;
   counter-increment: printer-page;
 }
 
