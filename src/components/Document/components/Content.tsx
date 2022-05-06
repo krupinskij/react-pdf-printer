@@ -3,16 +3,17 @@ import React, { useContext, useLayoutEffect, useRef } from 'react';
 import PrinterContext, { PrinterContextValue } from 'context/PrinterContext';
 import usePageDimensions from 'hooks/usePageDimensions';
 
-import { Orientation, Pagination, Size } from '../model';
+import { DocumentConfiguration } from '../model';
 
 type Props = {
   children: React.ReactNode;
-  size: Size;
-  orientation: Orientation;
-  pagination: Pagination;
+  configuration?: DocumentConfiguration;
+  printOnly: boolean;
 };
 
-const Content = ({ children, size, orientation, pagination }: Props) => {
+const Content = ({ children, configuration, printOnly }: Props) => {
+  const { size = 'a4', orientation = 'portrait', pagination = {} } = configuration || {};
+
   const documentRef = useRef<HTMLDivElement>(null);
   const { isLoading } = useContext<PrinterContextValue | null>(PrinterContext)!;
   const { height } = usePageDimensions(size, orientation);
@@ -112,7 +113,7 @@ const Content = ({ children, size, orientation, pagination }: Props) => {
     };
   }, [isLoading, height, pagination]);
   return (
-    <div ref={documentRef} data-printer-type="document">
+    <div ref={documentRef} data-printer-type="document" data-printer-printonly={printOnly}>
       {children}
     </div>
   );
