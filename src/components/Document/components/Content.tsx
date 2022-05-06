@@ -3,16 +3,18 @@ import React, { useContext, useLayoutEffect, useRef } from 'react';
 import PrinterContext, { PrinterContextValue } from 'context/PrinterContext';
 import usePageDimensions from 'hooks/usePageDimensions';
 
-import { Orientation, Pagination, Size } from '../model';
+import { DocumentConfiguration } from '../model';
 
 type Props = {
   children: React.ReactNode;
-  size: Size;
-  orientation: Orientation;
-  pagination: Pagination;
+  configuration?: DocumentConfiguration;
+  printOnly: boolean;
+  onLoaded?: () => void;
 };
 
-const Content = ({ children, size, orientation, pagination }: Props) => {
+const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
+  const { size = 'a4', orientation = 'portrait', pagination = {} } = configuration || {};
+
   const documentRef = useRef<HTMLDivElement>(null);
   const { isLoading } = useContext<PrinterContextValue | null>(PrinterContext)!;
   const { height } = usePageDimensions(size, orientation);
@@ -95,6 +97,8 @@ const Content = ({ children, size, orientation, pagination }: Props) => {
         .replaceAll(formatCount, String(pages.length))}'`
     );
 
+    onLoaded && onLoaded();
+
     return () => {
       const styled =
         documentRef.current?.querySelectorAll<HTMLElement>('[data-printer-styled="true"]') || [];
@@ -110,9 +114,9 @@ const Content = ({ children, size, orientation, pagination }: Props) => {
         elem.remove();
       });
     };
-  }, [isLoading, height, pagination]);
+  }, [isLoading, height, pagination, onLoaded]);
   return (
-    <div ref={documentRef} data-printer-type="document">
+    <div ref={documentRef} data-printer-type="document" data-printer-printonly={printOnly}>
       {children}
     </div>
   );

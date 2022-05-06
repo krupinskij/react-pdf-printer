@@ -11,12 +11,12 @@ type DocumentProps = {
   header: ReactNode;
   footer: ReactNode;
   children: ReactElement<ArticleProps> | Array<ReactElement<ArticleProps>>;
+  screen?: ReactNode;
   configuration?: DocumentConfiguration;
+  onLoaded?: () => void;
 };
 
-const Document = ({ header, footer, children, configuration }: DocumentProps) => {
-  const { size = 'a4', orientation = 'portrait', pagination = {} } = configuration || {};
-
+const Document = ({ header, footer, children, screen, configuration, onLoaded }: DocumentProps) => {
   const documentChildren = React.Children.map(children, (child) => {
     if (
       !React.isValidElement<ArticleProps>(child) ||
@@ -34,9 +34,10 @@ const Document = ({ header, footer, children, configuration }: DocumentProps) =>
 
   return (
     <DocumentProvider>
-      <Content size={size} orientation={orientation} pagination={pagination}>
+      <Content configuration={configuration} printOnly={!!screen} onLoaded={onLoaded}>
         {documentChildren}
       </Content>
+      <div data-printer-screenonly="true">{screen}</div>
     </DocumentProvider>
   );
 };

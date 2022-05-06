@@ -10,6 +10,10 @@
   }
 }
 
+body {
+  overflow: hidden;
+}
+
 [data-printer-type='document'] {
   --pagination-content: '';
   counter-reset: printer-page;
@@ -38,4 +42,18 @@
 
 [data-printer-component='pagination']::before {
   content: var(--pagination-content);
+}
+
+@media print {
+  [data-printer-screenonly='true'] {
+    visibility: hidden;
+    height: 0;
+  }
+}
+
+@media screen {
+  [data-printer-printonly='true'] {
+    visibility: hidden;
+    height: 0;
+  }
 }
