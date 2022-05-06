@@ -12,6 +12,7 @@ export type ArticleProps = SectionProps & {
 export type DocumentConfiguration = {
   orientation?: Orientation;
   size?: Size;
+  pagination?: Pagination;
 };
 
 export type Orientation = 'landscape' | 'portrait';
@@ -29,3 +30,9 @@ export type PageSize =
   | 'letter'
   | 'legal'
   | 'ledger';
+
+export type Pagination = {
+  format?: string;
+  formatPage?: string;
+  formatCount?: string;
+};

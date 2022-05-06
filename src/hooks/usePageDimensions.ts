@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Orientation, PageSize, Size } from 'components/Document/model';
 
@@ -42,9 +42,7 @@ const findCssRule = (cssRules: CSSRuleList, size: string) => {
 };
 
 const usePageDimensions = (size: Size, orientation: Orientation): DimensionType => {
-  const [dimensions, setDimensions] = useState<DimensionType>({ width: 0, height: 0 });
-
-  useEffect(() => {
+  const dimensions = useMemo(() => {
     let width = 0;
     let height = 0;
     let sizeCSSValue = '';
@@ -67,7 +65,7 @@ const usePageDimensions = (size: Size, orientation: Orientation): DimensionType 
 
     sizeCSSValue += ' ' + orientation;
     setSizeCSSValue(sizeCSSValue);
-    setDimensions({ width, height });
+    return { width, height };
   }, [size, orientation]);
 
   return dimensions;

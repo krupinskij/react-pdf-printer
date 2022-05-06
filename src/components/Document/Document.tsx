@@ -1,4 +1,4 @@
-import React, { ReactNode, ReactElement } from 'react';
+import React, { ReactNode, ReactElement, useEffect } from 'react';
 
 import DocumentProvider from 'context/PrinterProvider';
 
@@ -15,14 +15,9 @@ type DocumentProps = {
 };
 
 const Document = ({ header, footer, children, configuration }: DocumentProps) => {
-  const { size = 'a4', orientation = 'portrait' } = configuration || {};
+  const { size = 'a4', orientation = 'portrait', pagination = {} } = configuration || {};
 
   const documentChildren = React.Children.map(children, (child) => {
-    console.log(
-      !React.isValidElement<ArticleProps>(child),
-      child.type !== Page,
-      child.type !== View
-    );
     if (
       !React.isValidElement<ArticleProps>(child) ||
       (child.type !== Page && child.type !== View)
@@ -39,7 +34,7 @@ const Document = ({ header, footer, children, configuration }: DocumentProps) =>
 
   return (
     <DocumentProvider>
-      <DocumentContent size={size} orientation={orientation}>
+      <DocumentContent size={size} orientation={orientation} pagination={pagination}>
         {documentChildren}
       </DocumentContent>
     </DocumentProvider>

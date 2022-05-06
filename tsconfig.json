@@ -2,6 +2,11 @@
   "compilerOptions": {
     "target": "es5",
     "module": "esnext",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "jsx": "react",
     "sourceMap": true,
     "outDir": "dist",
@@ -14,6 +19,6 @@
     "declaration": true,
     "declarationDir": "types",
     "emitDeclarationOnly": true,
-    "baseUrl": "src",
+    "baseUrl": "src"
   }
 }
