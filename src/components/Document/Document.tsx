@@ -1,10 +1,10 @@
-import React, { ReactNode, ReactElement, useEffect } from 'react';
+import React, { ReactNode, ReactElement } from 'react';
 
 import DocumentProvider from 'context/PrinterProvider';
 
-import DocumentContent from './components/DocumentContent';
-import Page from './components/Page';
-import View from './components/View';
+import Content from './components/Content';
+import Page from './components/articles/Page';
+import View from './components/articles/View';
 import { ArticleProps, DocumentConfiguration } from './model';
 
 type DocumentProps = {
@@ -34,9 +34,9 @@ const Document = ({ header, footer, children, configuration }: DocumentProps) =>
 
   return (
     <DocumentProvider>
-      <DocumentContent size={size} orientation={orientation} pagination={pagination}>
+      <Content size={size} orientation={orientation} pagination={pagination}>
         {documentChildren}
-      </DocumentContent>
+      </Content>
     </DocumentProvider>
   );
 };
