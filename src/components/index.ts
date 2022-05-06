@@ -1,3 +1,2 @@
-export { default as Document } from './Document';
-export { default as Page } from './Page';
-export { default as View } from './View';
+export { default as Document, Page, View } from './Document';
+export { default as Pagination } from './Pagination';

@@ -2,21 +2,25 @@ import React, { ReactNode, ReactElement } from 'react';
 
 import DocumentProvider from 'context/PrinterProvider';
 
-import Page, { PageProps } from '../Page';
-import View, { ViewProps } from '../View';
+import Content from './components/Content';
+import Page from './components/articles/Page';
+import View from './components/articles/View';
+import { ArticleProps, DocumentConfiguration } from './model';
 
-interface Props {
+type DocumentProps = {
   header: ReactNode;
   footer: ReactNode;
-  children: ReactElement<PageProps | ViewProps> | Array<ReactElement<PageProps | ViewProps>>;
-}
+  children: ReactElement<ArticleProps> | Array<ReactElement<ArticleProps>>;
+  screen?: ReactNode;
+  configuration?: DocumentConfiguration;
+  onLoaded?: () => void;
+};
 
-const Document = ({ header, footer, children }: Props) => {
+const Document = ({ header, footer, children, screen, configuration, onLoaded }: DocumentProps) => {
   const documentChildren = React.Children.map(children, (child) => {
     if (
-      !React.isValidElement<PageProps | ViewProps>(child) ||
-      child.type !== Page ||
-      child.type !== View
+      !React.isValidElement<ArticleProps>(child) ||
+      (child.type !== Page && child.type !== View)
     ) {
       throw Error('Page and View are the only valid Document child components.');
     }
@@ -27,7 +31,15 @@ const Document = ({ header, footer, children }: Props) => {
     };
     return React.cloneElement(child, props);
   });
-  return <DocumentProvider>{documentChildren}</DocumentProvider>;
+
+  return (
+    <DocumentProvider>
+      <Content configuration={configuration} printOnly={!!screen} onLoaded={onLoaded}>
+        {documentChildren}
+      </Content>
+      <div data-printer-screenonly="true">{screen}</div>
+    </DocumentProvider>
+  );
 };
 
 export default Document;

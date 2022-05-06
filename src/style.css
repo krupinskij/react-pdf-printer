@@ -1,11 +1,59 @@
 @media print {
   @page {
-    size: a4;
     margin: 0;
+    size: a4;
   }
 
   * {
     color-adjust: exact;
     -webkit-print-color-adjust: exact;
+  }
+}
+
+body {
+  overflow: hidden;
+}
+
+[data-printer-type='document'] {
+  --pagination-content: '';
+  counter-reset: printer-page;
+}
+
+[data-printer-type='page'] {
+  height: 100vh;
+  overflow-y: hidden;
+}
+
+[data-printer-type='page']:not(:last-child),
+[data-printer-type='view']:not(:last-child) {
+  break-after: page;
+}
+
+[data-printer-component='header'],
+[data-printer-component='footer'] {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+[data-printer-component='footer'] {
+  counter-increment: printer-page;
+}
+
+[data-printer-component='pagination']::before {
+  content: var(--pagination-content);
+}
+
+@media print {
+  [data-printer-screenonly='true'] {
+    visibility: hidden;
+    height: 0;
+  }
+}
+
+@media screen {
+  [data-printer-printonly='true'] {
+    visibility: hidden;
+    height: 0;
   }
 }
