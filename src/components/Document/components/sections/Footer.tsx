@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { SectionProps } from '../model';
+import { SectionProps } from '../../model';
 
 const Footer = ({ children }: SectionProps) => (
   <section data-printer-component="footer">{children}</section>

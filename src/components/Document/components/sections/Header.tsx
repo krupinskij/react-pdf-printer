@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { SectionProps } from '../model';
+import { SectionProps } from '../../model';
 
 const Header = ({ children }: SectionProps) => (
   <section data-printer-component="header">{children}</section>

@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { ArticleProps } from '../model';
-import Content from './Content';
-import Footer from './Footer';
-import Header from './Header';
+import { ArticleProps } from '../../model';
+import Footer from '../sections/Footer';
+import Header from '../sections/Header';
+import Content from '../sections/Main';
 
 const Page = ({ header, footer, children }: ArticleProps) => {
   return (
