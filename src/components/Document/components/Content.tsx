@@ -27,9 +27,9 @@ const Content = ({ children, size, orientation, pagination }: Props) => {
     articles.forEach((article) => {
       const header = article.querySelector<HTMLElement>('[data-printer-component="header"]');
       const footer = article.querySelector<HTMLElement>('[data-printer-component="footer"]');
-      const content = article.querySelector<HTMLElement>('[data-printer-component="content"]');
+      const main = article.querySelector<HTMLElement>('[data-printer-component="main"]');
 
-      if (!content || !header || !footer) return;
+      if (!main || !header || !footer) return;
 
       pagesCount++;
 
@@ -38,11 +38,11 @@ const Content = ({ children, size, orientation, pagination }: Props) => {
 
       header.style.top = `${pagesCount * 100}vh`;
       footer.style.top = `calc(${(pagesCount + 1) * 100}vh - ${footerHeight}px)`;
-      content.style.paddingTop = `${headerHeight}px`;
+      main.style.paddingTop = `${headerHeight}px`;
 
       if (article.dataset.printerType === 'page') return;
 
-      const divisibleElements = content.querySelectorAll<HTMLElement>('[data-printer-divisible]');
+      const divisibleElements = main.querySelectorAll<HTMLElement>('[data-printer-divisible]');
       divisibleElements.forEach((divisibleElement) => {
         let distanceFromTop = (pagesCount + 1) * height - footerHeight;
         if (article.previousElementSibling) {
