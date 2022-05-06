@@ -42,17 +42,17 @@ const DocumentContent = ({ children, size, orientation, pagination }: Props) => 
 
       if (article.dataset.printerType === 'page') return;
 
-      const divisableElements = content.querySelectorAll<HTMLElement>('[data-printer-divisable]');
-      divisableElements.forEach((divisableElement) => {
+      const divisibleElements = content.querySelectorAll<HTMLElement>('[data-printer-divisible]');
+      divisibleElements.forEach((divisibleElement) => {
         let distanceFromTop = (pagesCount + 1) * height - footerHeight;
         if (article.previousElementSibling) {
           distanceFromTop =
             article.previousElementSibling.getBoundingClientRect().bottom + height - footerHeight;
         }
-        const clientRect = divisableElement.getBoundingClientRect();
+        const clientRect = divisibleElement.getBoundingClientRect();
 
         if (clientRect.top < distanceFromTop && clientRect.bottom > distanceFromTop) {
-          const children = divisableElement.childNodes as NodeListOf<HTMLElement>;
+          const children = divisibleElement.childNodes as NodeListOf<HTMLElement>;
           let childDistFromTop = distanceFromTop;
           children.forEach((child) => {
             const childClientRect = child.getBoundingClientRect();
@@ -62,14 +62,19 @@ const DocumentContent = ({ children, size, orientation, pagination }: Props) => 
             ) {
               child.style.paddingTop = `${headerHeight}px`;
               (child.previousSibling as HTMLElement).style.breakAfter = 'page';
+              child.dataset.printerStyled = 'true';
+              (child.previousSibling as HTMLElement).dataset.printerStyled = 'true';
+
               childDistFromTop += height - footerHeight;
               pagesCount++;
               const newHeader = header.cloneNode(true) as HTMLElement;
               newHeader.style.top = `${pagesCount * 100}vh`;
+              newHeader.dataset.printerClone = 'true';
               article.appendChild(newHeader);
 
               const newFooter = footer.cloneNode(true) as HTMLElement;
               newFooter.style.top = `calc(${(pagesCount + 1) * 100}vh - ${footerHeight}px)`;
+              newHeader.dataset.printerClone = 'true';
               article.appendChild(newFooter);
             }
           });
@@ -89,6 +94,22 @@ const DocumentContent = ({ children, size, orientation, pagination }: Props) => 
         .replaceAll(formatPage, "'counter(printer-page)'")
         .replaceAll(formatCount, String(pages.length))}'`
     );
+
+    return () => {
+      const styled =
+        documentRef.current?.querySelectorAll<HTMLElement>('[data-printer-styled="true"]') || [];
+      styled.forEach((elem) => {
+        elem.style.paddingTop = '0';
+        elem.style.breakAfter = 'auto';
+        elem.dataset.printerStyled = 'false';
+      });
+
+      const clones =
+        documentRef.current?.querySelectorAll<HTMLElement>('[data-printer-clone="true"]') || [];
+      clones.forEach((elem) => {
+        elem.remove();
+      });
+    };
   }, [isLoading, height, pagination]);
   return (
     <div ref={documentRef} data-printer-type="document">
