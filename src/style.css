@@ -9,3 +9,19 @@
     -webkit-print-color-adjust: exact;
   }
 }
+
+:root {
+  --pagination-content: '';
+}
+
+[data-printer-type='document'] {
+  counter-reset: printer-page;
+}
+
+[data-printer-component='footer'] {
+  counter-increment: printer-page;
+}
+
+[data-printer-component='pagination']::before {
+  content: var(--pagination-content);
+}

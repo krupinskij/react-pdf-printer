@@ -8,6 +8,7 @@ import Header from './Header';
 const style: CSSProperties = {
   height: '100vh',
   overflowY: 'hidden',
+  breakAfter: 'page',
 };
 
 const Page = ({ header, footer, children }: ArticleProps) => {

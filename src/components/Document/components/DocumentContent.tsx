@@ -3,15 +3,16 @@ import React, { useContext, useLayoutEffect, useRef } from 'react';
 import PrinterContext, { PrinterContextValue } from 'context/PrinterContext';
 import usePageDimensions from 'hooks/usePageDimensions';
 
-import { DocumentConfiguration, Orientation, Size } from '../model';
+import { Orientation, Size } from '../model';
 
 type Props = {
   children: React.ReactNode;
   size: Size;
   orientation: Orientation;
+  formatCount: string;
 };
 
-const DocumentContent = ({ children, size, orientation }: Props) => {
+const DocumentContent = ({ children, size, orientation, formatCount }: Props) => {
   const documentRef = useRef<HTMLDivElement>(null);
   const { isLoading } = useContext<PrinterContextValue | null>(PrinterContext)!;
   const { height } = usePageDimensions(size, orientation);
@@ -23,9 +24,9 @@ const DocumentContent = ({ children, size, orientation }: Props) => {
       '[data-printer-type="page"], [data-printer-type="view"]'
     );
     articles.forEach((article) => {
-      const header = article.querySelector<HTMLElement>('[data-printer-segment="header"]');
-      const footer = article.querySelector<HTMLElement>('[data-printer-segment="footer"]');
-      const content = article.querySelector<HTMLElement>('[data-printer-segment="content"]');
+      const header = article.querySelector<HTMLElement>('[data-printer-component="header"]');
+      const footer = article.querySelector<HTMLElement>('[data-printer-component="footer"]');
+      const content = article.querySelector<HTMLElement>('[data-printer-component="content"]');
 
       if (!content || !header || !footer) return;
 
@@ -69,6 +70,17 @@ const DocumentContent = ({ children, size, orientation }: Props) => {
         }
       });
     });
+
+    const pages = documentRef.current.querySelectorAll<HTMLElement>(
+      '[data-printer-component="pagination"]'
+    );
+
+    document.documentElement.style.setProperty(
+      '--pagination-content',
+      document.documentElement.style
+        .getPropertyValue('--pagination-content')
+        .replaceAll(formatCount, String(pages.length))
+    );
   }, [isLoading, height]);
   return <div ref={documentRef}>{children}</div>;
 };

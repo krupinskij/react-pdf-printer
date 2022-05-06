@@ -7,7 +7,7 @@ const style: CSSProperties = {
 };
 
 const Header = ({ children }: SectionProps) => (
-  <section data-printer-segment="header" style={style}>
+  <section data-printer-component="header" style={style}>
     {children}
   </section>
 );

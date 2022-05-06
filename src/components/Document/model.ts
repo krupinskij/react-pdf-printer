@@ -12,6 +12,11 @@ export type ArticleProps = SectionProps & {
 export type DocumentConfiguration = {
   orientation?: Orientation;
   size?: Size;
+  pagination?: {
+    format?: string;
+    formatPage?: string;
+    formatCount?: string;
+  };
 };
 
 export type Orientation = 'landscape' | 'portrait';

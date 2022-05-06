@@ -7,7 +7,7 @@ const style: CSSProperties = {
 };
 
 const Footer = ({ children }: SectionProps) => (
-  <section data-printer-segment="footer" style={style}>
+  <section data-printer-component="footer" style={style}>
     {children}
   </section>
 );
