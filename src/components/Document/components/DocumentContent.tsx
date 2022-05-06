@@ -38,7 +38,7 @@ const DocumentContent = ({ children, size, orientation, pagination }: Props) => 
 
       header.style.top = `${pagesCount * 100}vh`;
       footer.style.top = `calc(${(pagesCount + 1) * 100}vh - ${footerHeight}px)`;
-      content.style.marginTop = `${headerHeight}px`;
+      content.style.paddingTop = `${headerHeight}px`;
 
       if (article.dataset.printerType === 'page') return;
 

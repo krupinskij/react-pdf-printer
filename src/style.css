@@ -25,12 +25,14 @@
   break-after: page;
 }
 
-[data-printer-component='header'] {
+[data-printer-component='header'],
+[data-printer-component='footer'] {
   position: absolute;
+  left: 0;
+  right: 0;
 }
 
 [data-printer-component='footer'] {
-  position: absolute;
   counter-increment: printer-page;
 }
 
