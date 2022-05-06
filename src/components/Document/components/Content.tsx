@@ -9,9 +9,10 @@ type Props = {
   children: React.ReactNode;
   configuration?: DocumentConfiguration;
   printOnly: boolean;
+  onLoaded?: () => void;
 };
 
-const Content = ({ children, configuration, printOnly }: Props) => {
+const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
   const { size = 'a4', orientation = 'portrait', pagination = {} } = configuration || {};
 
   const documentRef = useRef<HTMLDivElement>(null);
@@ -96,6 +97,8 @@ const Content = ({ children, configuration, printOnly }: Props) => {
         .replaceAll(formatCount, String(pages.length))}'`
     );
 
+    onLoaded && onLoaded();
+
     return () => {
       const styled =
         documentRef.current?.querySelectorAll<HTMLElement>('[data-printer-styled="true"]') || [];
@@ -111,7 +114,7 @@ const Content = ({ children, configuration, printOnly }: Props) => {
         elem.remove();
       });
     };
-  }, [isLoading, height, pagination]);
+  }, [isLoading, height, pagination, onLoaded]);
   return (
     <div ref={documentRef} data-printer-type="document" data-printer-printonly={printOnly}>
       {children}

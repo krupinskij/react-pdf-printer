@@ -13,9 +13,10 @@ type DocumentProps = {
   children: ReactElement<ArticleProps> | Array<ReactElement<ArticleProps>>;
   screen?: ReactNode;
   configuration?: DocumentConfiguration;
+  onLoaded?: () => void;
 };
 
-const Document = ({ header, footer, children, screen, configuration }: DocumentProps) => {
+const Document = ({ header, footer, children, screen, configuration, onLoaded }: DocumentProps) => {
   const documentChildren = React.Children.map(children, (child) => {
     if (
       !React.isValidElement<ArticleProps>(child) ||
@@ -33,7 +34,7 @@ const Document = ({ header, footer, children, screen, configuration }: DocumentP
 
   return (
     <DocumentProvider>
-      <Content configuration={configuration} printOnly={!!screen}>
+      <Content configuration={configuration} printOnly={!!screen} onLoaded={onLoaded}>
         {documentChildren}
       </Content>
       <div data-printer-screenonly="true">{screen}</div>
