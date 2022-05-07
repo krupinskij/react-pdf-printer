@@ -34,12 +34,12 @@ const PrinterProvider = ({ isAsync, children }: Props) => {
   };
 
   useEffect(() => {
-    const values = Object.values(state);
-    const isSomeNotReady = values.some((isReady) => !isReady);
     if (isAsync) {
+      const values = Object.values(state);
+      const isSomeNotReady = values.some((isReady) => !isReady);
       setIsLoading(values.length === 0 || isSomeNotReady);
     } else {
-      setIsLoading(isSomeNotReady);
+      setIsLoading(false);
     }
   }, [state, isAsync]);
 
