@@ -13,6 +13,7 @@ export type DocumentConfiguration = {
   orientation?: Orientation;
   size?: Size;
   pagination?: Pagination;
+  isAsync?: boolean;
 };
 
 export type Orientation = 'landscape' | 'portrait';
