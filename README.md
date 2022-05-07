@@ -173,6 +173,7 @@ const MyComponent = () => {
 ```
 
 **_NOTE_**: Running `subscribe` function outside Document throws an error.
+
 **_NOTE_**: Using `subscribe` function makes sense only when `isAsync` flag is set to `true`.
 
 <br>
