@@ -1,8 +1,9 @@
-import React, { useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 
 import PrinterContext, { PrinterContextValue } from './PrinterContext';
 
 interface Props {
+  isAsync: boolean;
   children: React.ReactNode;
 }
 
@@ -12,18 +13,19 @@ type ReducerAction = {
 };
 
 const reducer = (state: Record<string, boolean>, { key, type }: ReducerAction) => {
+  console.log(state, key, type);
   switch (type) {
-    case 'subscribe': {
+    case 'subscribe':
       return { ...state, [key]: false };
-    }
-    case 'run': {
+
+    case 'run':
       return { ...state, [key]: true };
-    }
   }
 };
 
-const PrinterProvider = ({ children }: Props) => {
+const PrinterProvider = ({ isAsync, children }: Props) => {
   const [state, dispatch] = useReducer(reducer, {});
+  const [isLoading, setIsLoading] = useState(true);
   const subscribe = (key: string) => {
     dispatch({ key, type: 'subscribe' });
     return () => {
@@ -31,10 +33,20 @@ const PrinterProvider = ({ children }: Props) => {
     };
   };
 
+  useEffect(() => {
+    const values = Object.values(state);
+    const isSomeNotReady = values.some((isReady) => !isReady);
+    if (isAsync) {
+      setIsLoading(values.length === 0 || isSomeNotReady);
+    } else {
+      setIsLoading(isSomeNotReady);
+    }
+  }, [state, isAsync]);
+
   const value: PrinterContextValue = {
     isPrinter: true,
     subscribe,
-    isLoading: !Object.values(state).every((value) => value),
+    isLoading,
   };
 
   return <PrinterContext.Provider value={value}>{children}</PrinterContext.Provider>;

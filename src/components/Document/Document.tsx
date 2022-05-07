@@ -17,6 +17,7 @@ type DocumentProps = {
 };
 
 const Document = ({ header, footer, children, screen, configuration, onLoaded }: DocumentProps) => {
+  const { isAsync = false } = configuration || {};
   const documentChildren = React.Children.map(children, (child) => {
     if (
       !React.isValidElement<ArticleProps>(child) ||
@@ -33,7 +34,7 @@ const Document = ({ header, footer, children, screen, configuration, onLoaded }:
   });
 
   return (
-    <DocumentProvider>
+    <DocumentProvider isAsync={isAsync}>
       <Content configuration={configuration} printOnly={!!screen} onLoaded={onLoaded}>
         {documentChildren}
       </Content>

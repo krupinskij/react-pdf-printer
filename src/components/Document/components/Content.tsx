@@ -1,4 +1,4 @@
-import React, { useContext, useLayoutEffect, useRef } from 'react';
+import React, { useContext, useEffect, useLayoutEffect, useRef } from 'react';
 
 import PrinterContext, { PrinterContextValue } from 'context/PrinterContext';
 import usePageDimensions from 'hooks/usePageDimensions';
@@ -19,7 +19,7 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
   const { isLoading } = useContext<PrinterContextValue | null>(PrinterContext)!;
   const { height } = usePageDimensions(size, orientation);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (isLoading || !documentRef.current) return;
 
     const articles = documentRef.current.querySelectorAll<HTMLElement>(
@@ -76,7 +76,7 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
 
               const newFooter = footer.cloneNode(true) as HTMLElement;
               newFooter.style.top = `calc(${(pagesCount + 1) * 100}vh - ${footerHeight}px)`;
-              newHeader.dataset.printerClone = 'true';
+              newFooter.dataset.printerClone = 'true';
               article.appendChild(newFooter);
             }
           });
