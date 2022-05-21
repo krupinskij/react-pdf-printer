@@ -62,10 +62,13 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
               childClientRect.top < childDistFromTop &&
               childClientRect.bottom > childDistFromTop
             ) {
-              child.style.paddingTop = `${headerHeight}px`;
               (child.previousSibling as HTMLElement).style.breakAfter = 'page';
-              child.dataset.printerStyled = 'true';
-              (child.previousSibling as HTMLElement).dataset.printerStyled = 'true';
+              (child.previousSibling as HTMLElement).dataset.printerBreak = 'true';
+
+              const placeholderElement = document.createElement('div');
+              placeholderElement.style.height = `${headerHeight}px`;
+              placeholderElement.dataset.placeholder = 'true';
+              divisibleElement.insertBefore(placeholderElement, child);
 
               childDistFromTop += height - footerHeight;
               pagesCount++;
@@ -100,12 +103,18 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
     onLoaded && onLoaded();
 
     return () => {
-      const styled =
-        documentRef.current?.querySelectorAll<HTMLElement>('[data-printer-styled="true"]') || [];
-      styled.forEach((elem) => {
-        elem.style.paddingTop = '0';
+      const brokens =
+        documentRef.current?.querySelectorAll<HTMLElement>('[data-printer-break="true"]') || [];
+      brokens.forEach((elem) => {
         elem.style.breakAfter = 'auto';
-        elem.dataset.printerStyled = 'false';
+        elem.dataset.printerBreak = 'false';
+      });
+
+      const placeholders =
+        documentRef.current?.querySelectorAll<HTMLElement>('[data-printer-placeholder="true"]') ||
+        [];
+      placeholders.forEach((elem) => {
+        elem.remove();
       });
 
       const clones =
