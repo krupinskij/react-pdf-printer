@@ -1,20 +1,14 @@
 # React Pdf Printer
 
-<br>
-
 ## Description
 
 Library for creating and printing pdf documents using React.
-
-<br>
 
 ## Installation
 
 ```bash
 $ npm install react-pdf-printer
 ```
-
-<br>
 
 ## Usage
 
@@ -23,12 +17,6 @@ Importing
 ```typescript
 import { Document, Page, View, Pagination, usePrinter } from 'react-pdf-printer';
 ```
-
-<br>
-
----
-
-<br>
 
 ### Document
 
@@ -74,12 +62,6 @@ Document is a top level component wrapped around the other ones and configuratin
 </Document>
 ```
 
-<br>
-
----
-
-<br>
-
 ### Page
 
 Undivisible into many pages component.
@@ -91,12 +73,6 @@ Undivisible into many pages component.
 | children | Content for the page | React.ReactNode | yes      | ---                       |
 
 **_NOTE_**: If the content of the Page is larger than the height of the page overflow content isn't visible.
-
-<br>
-
----
-
-<br>
 
 ### View
 
@@ -110,23 +86,11 @@ Divisible into many pages component.
 
 **_NOTE_**: Inner components that can be divided into many pages should have `data-printer-divisible` attribute. Rare use of this attribute can cause overflowed content and weird behaviour.
 
-<br>
-
----
-
-<br>
-
 ### Pagination
 
 Component for marking which page is it. Configured by Document.
 
 **_NOTE_**: This component should be placed in your footer.
-
-<br>
-
----
-
-<br>
 
 ### usePrinter
 
@@ -175,8 +139,6 @@ const MyComponent = () => {
 **_NOTE_**: Running `subscribe` function outside Document throws an error.
 
 **_NOTE_**: Using `subscribe` function makes sense only when `isAsync` flag is set to `true`.
-
-<br>
 
 ## Development
 
