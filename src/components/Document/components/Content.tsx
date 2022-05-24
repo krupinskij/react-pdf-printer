@@ -67,7 +67,7 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
 
               const placeholderElement = document.createElement('div');
               placeholderElement.style.height = `${headerHeight}px`;
-              placeholderElement.dataset.placeholder = 'true';
+              placeholderElement.dataset.printerPlaceholder = 'true';
               divisibleElement.insertBefore(placeholderElement, child);
 
               childDistFromTop += height - footerHeight;
