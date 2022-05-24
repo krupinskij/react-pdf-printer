@@ -15,7 +15,8 @@ const copyConfig = {
         {
           src: './package.json',
           dest: 'dist',
-          transform: (contents) => contents.toString().replace(`"prepare": "husky install",`, ''),
+          transform: (contents) =>
+            contents.toString().replace(`"prepare": "husky install",`, '').replaceAll('dist/', ''),
         },
       ],
     }),
