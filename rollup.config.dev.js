@@ -11,7 +11,13 @@ const copyConfig = {
   plugins: [
     json({ compact: true, namedExports: false }),
     copy({
-      targets: [{ src: './package.json', dest: 'dist' }],
+      targets: [
+        {
+          src: './package.json',
+          dest: 'dist',
+          transform: (contents) => contents.toString().replace(`"prepare": "husky install",`, ''),
+        },
+      ],
     }),
   ],
 };

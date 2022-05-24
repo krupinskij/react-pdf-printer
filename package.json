@@ -16,7 +16,8 @@
     "build:dev": "rollup -c rollup.config.dev.js",
     "build:watch": "rollup -c -w",
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "link": "cd ./dist && npm link"
   },
   "keywords": [
     "pdf",
