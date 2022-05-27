@@ -11,6 +11,7 @@
 }
 
 body {
+  margin: 0;
   overflow: hidden;
 }
 
@@ -36,7 +37,7 @@ body {
   right: 0;
 }
 
-[data-printer-component='footer'] {
+[data-printer-component='header'] {
   counter-increment: printer-page;
 }
 
@@ -47,6 +48,7 @@ body {
 @media print {
   [data-printer-screenonly='true'] {
     visibility: hidden;
+    overflow: hidden;
     height: 0;
   }
 }
@@ -54,6 +56,7 @@ body {
 @media screen {
   [data-printer-printonly='true'] {
     visibility: hidden;
+    overflow: hidden;
     height: 0;
   }
 }

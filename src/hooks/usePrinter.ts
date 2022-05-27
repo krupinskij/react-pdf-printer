@@ -12,11 +12,14 @@ const usePrinter = (): UsePrinterType => {
       subscribe: () => {
         throw new Error('Subscription can only be run in context of Document.');
       },
+      run: () => {
+        throw new Error('Run can only be run in context of Document.');
+      },
     };
   }
 
-  const { isPrinter, subscribe } = contextValue;
-  return { isPrinter, subscribe };
+  const { isPrinter, subscribe, run } = contextValue;
+  return { isPrinter, subscribe, run };
 };
 
 export default usePrinter;
