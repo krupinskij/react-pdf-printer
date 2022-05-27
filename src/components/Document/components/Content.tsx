@@ -1,7 +1,8 @@
-import React, { useContext, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 
 import PrinterContext, { PrinterContextValue } from 'context/PrinterContext';
 import usePageDimensions from 'hooks/usePageDimensions';
+import { getMargin } from 'utilities/getMargin';
 
 import { DocumentConfiguration } from '../model';
 
@@ -17,7 +18,7 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
 
   const documentRef = useRef<HTMLDivElement>(null);
   const { isLoading } = useContext<PrinterContextValue | null>(PrinterContext)!;
-  const { height } = usePageDimensions(size, orientation);
+  const { height, width } = usePageDimensions(size, orientation);
 
   useEffect(() => {
     if (isLoading || !documentRef.current) return;
@@ -35,43 +36,64 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
 
       pagesCount++;
 
-      const headerHeight = header.clientHeight || 0;
-      const footerHeight = footer.clientHeight || 0;
+      const headerHeight = header.clientHeight;
+      const footerHeight = footer.clientHeight;
 
       header.style.top = `${pagesCount * 100}vh`;
       footer.style.top = `calc(${(pagesCount + 1) * 100}vh - ${footerHeight}px)`;
-      main.style.paddingTop = `${headerHeight}px`;
+
+      const placeholderElement = document.createElement('div');
+      placeholderElement.style.height = `${headerHeight}px`;
+      placeholderElement.dataset.printerPlaceholder = 'true';
+      article.insertBefore(placeholderElement, main);
 
       if (article.dataset.printerType === 'page') return;
 
+      let distanceFromTop = height - footerHeight;
+      if (article.previousElementSibling) {
+        const { bottom: prevElemBottom } = article.previousElementSibling.getBoundingClientRect();
+        distanceFromTop += prevElemBottom;
+      }
+
       const divisibleElements = main.querySelectorAll<HTMLElement>('[data-printer-divisible]');
       divisibleElements.forEach((divisibleElement) => {
-        let distanceFromTop = (pagesCount + 1) * height - footerHeight;
-        if (article.previousElementSibling) {
-          distanceFromTop =
-            article.previousElementSibling.getBoundingClientRect().bottom + height - footerHeight;
-        }
-        const clientRect = divisibleElement.getBoundingClientRect();
+        const { bottom: divElemBottom, top: divElemTop } = divisibleElement.getBoundingClientRect();
+        const { marginTop: divElemMarginTop, marginBottom: divElemMarginBottom } =
+          getMargin(divisibleElement);
 
-        if (clientRect.top < distanceFromTop && clientRect.bottom > distanceFromTop) {
-          const children = divisibleElement.childNodes as NodeListOf<HTMLElement>;
-          let childDistFromTop = distanceFromTop;
+        if (
+          divElemTop - divElemMarginTop < distanceFromTop &&
+          divElemBottom + divElemMarginBottom > distanceFromTop
+        ) {
+          const children = Array.from(divisibleElement.childNodes as NodeListOf<HTMLElement>);
           children.forEach((child) => {
-            const childClientRect = child.getBoundingClientRect();
+            const { top: childTop, bottom: childBottom } = child.getBoundingClientRect();
+            const { marginTop: childMarginTop, marginBottom: childMarginBottom } = getMargin(child);
+
             if (
-              childClientRect.top < childDistFromTop &&
-              childClientRect.bottom > childDistFromTop
+              childTop - childMarginTop < distanceFromTop &&
+              childBottom + childMarginTop > distanceFromTop
             ) {
-              (child.previousSibling as HTMLElement).style.breakAfter = 'page';
-              (child.previousSibling as HTMLElement).dataset.printerBreak = 'true';
+              distanceFromTop = height - footerHeight + childTop;
+              pagesCount++;
+
+              const prevSibling = child.previousElementSibling;
 
               const placeholderElement = document.createElement('div');
               placeholderElement.style.height = `${headerHeight}px`;
-              placeholderElement.dataset.placeholder = 'true';
+              placeholderElement.dataset.printerPlaceholder = 'true';
               divisibleElement.insertBefore(placeholderElement, child);
 
-              childDistFromTop += height - footerHeight;
-              pagesCount++;
+              if (prevSibling) {
+                (prevSibling as HTMLElement).style.breakAfter = 'page';
+                (prevSibling as HTMLElement).dataset.printerBreak = 'true';
+              } else if (divisibleElement.previousSibling) {
+                (divisibleElement.previousSibling as HTMLElement).style.breakAfter = 'page';
+                (divisibleElement.previousSibling as HTMLElement).dataset.printerBreak = 'true';
+              } else {
+                placeholderElement.style.breakBefore = 'page';
+              }
+
               const newHeader = header.cloneNode(true) as HTMLElement;
               newHeader.style.top = `${pagesCount * 100}vh`;
               newHeader.dataset.printerClone = 'true';
@@ -89,15 +111,11 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
 
     const { format = '#p / #c', formatPage = '#p', formatCount = '#c' } = pagination;
 
-    const pages = documentRef.current.querySelectorAll<HTMLElement>(
-      '[data-printer-component="pagination"]'
-    );
-
     documentRef.current.style.setProperty(
       '--pagination-content',
       `'${format
         .replaceAll(formatPage, "'counter(printer-page)'")
-        .replaceAll(formatCount, String(pages.length))}'`
+        .replaceAll(formatCount, String(pagesCount + 1))}'`
     );
 
     onLoaded && onLoaded();
@@ -125,7 +143,12 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
     };
   }, [isLoading, height, pagination, onLoaded]);
   return (
-    <div ref={documentRef} data-printer-type="document" data-printer-printonly={printOnly}>
+    <div
+      ref={documentRef}
+      style={{ width: Math.floor(width) }}
+      data-printer-type="document"
+      data-printer-printonly={printOnly}
+    >
       {children}
     </div>
   );

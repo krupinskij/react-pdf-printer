@@ -97,24 +97,24 @@ Component for marking which page is it. Configured by Document.
 Printer hook
 
 ```typescript
-const { isPrinter, subscribe } = usePrinter();
+const { isPrinter, subscribe, run } = usePrinter();
 ```
 
-| Name      | Desc                                                       | Type                        |
-| --------- | ---------------------------------------------------------- | --------------------------- |
-| isPrinter | Value indicating if it component inside Document component | boolean                     |
-| subscribe | Function subscribing loading content                       | (key: string) => () => void |
+| Name      | Desc                                                       | Type                  |
+| --------- | ---------------------------------------------------------- | --------------------- |
+| isPrinter | Value indicating if it component inside Document component | boolean               |
+| subscribe | Function subscribing loading content                       | (key: string) => void |
+| run       | Function running loading content                           | (key: string) => void |
 
-`subscribe` function is useful when you are fetching some data from backend and don't want to print your document immediately
+`subscribe` and `run` functions are useful when you are fetching some data from backend and don't want to print your document immediately
 
 ```tsx
 const MyComponent = () => {
   const [data, setData] = useState([]);
-  const [run, setRun] = useState<() => void>();
-  const { subscribe } = usePrinter();
+  const { subscribe, run } = usePrinter();
 
   useEffect(() => {
-    setRun(() => subscribe('my-unique-key'));
+    subscribe('my-unique-key');
 
     const newData = fetchData();
     setData(newData);
@@ -123,7 +123,7 @@ const MyComponent = () => {
   useEffect(() => {
     if (data.length === 0) return;
 
-    run?.();
+    run('my-unique-key');
   }, [data, run]);
 
   return (
@@ -136,15 +136,18 @@ const MyComponent = () => {
 };
 ```
 
-**_NOTE_**: Running `subscribe` function outside Document throws an error.
+**_NOTE_**: Running `subscribe` or `run` functions outside Document throws an error.
 
-**_NOTE_**: Using `subscribe` function makes sense only when `isAsync` flag is set to `true`.
+**_NOTE_**: Using `subscribe` and `run` functions makes sense only when `isAsync` flag is set to `true`.
 
 ## Development
 
 ```bash
 # building
 $ npm run build
+
+# building in development mode
+$ npm run build:dev
 
 # building in watch mode
 $ npm run build:watch
