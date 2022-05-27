@@ -115,7 +115,7 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
       '--pagination-content',
       `'${format
         .replaceAll(formatPage, "'counter(printer-page)'")
-        .replaceAll(formatCount, String(pagesCount))}'`
+        .replaceAll(formatCount, String(pagesCount + 1))}'`
     );
 
     onLoaded && onLoaded();
