@@ -37,7 +37,7 @@ body {
   right: 0;
 }
 
-[data-printer-component='footer'] {
+[data-printer-component='header'] {
   counter-increment: printer-page;
 }
 
