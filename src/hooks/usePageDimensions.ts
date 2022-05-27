@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { Orientation, PageSize, Size } from 'components/Document/model';
+import { setSize } from 'utilities/setSize';
 
 const sizeMap: Record<PageSize, { width: number; height: number }> = {
   a3: { width: 1122.519685, height: 1587.4015748 },
@@ -18,27 +19,6 @@ const sizeMap: Record<PageSize, { width: number; height: number }> = {
 type DimensionType = {
   width: number;
   height: number;
-};
-
-const setSizeCSSValue = (size: string) => {
-  const styleSheets = document.styleSheets;
-
-  for (let i = 0; i < styleSheets.length; i++) {
-    findCssRule(styleSheets[i].cssRules, size);
-  }
-};
-
-const findCssRule = (cssRules: CSSRuleList, size: string) => {
-  for (let i = 0; i < cssRules.length; i++) {
-    const cssRule = cssRules[i] as any;
-    if (!cssRule.cssRules) {
-      cssRule.style.size = size;
-      return;
-    }
-    if (!cssRule.cssText.includes('@page')) continue;
-
-    findCssRule(cssRule.cssRules, size);
-  }
 };
 
 const usePageDimensions = (size: Size, orientation: Orientation): DimensionType => {
@@ -64,7 +44,7 @@ const usePageDimensions = (size: Size, orientation: Orientation): DimensionType 
     }
 
     sizeCSSValue += ' ' + orientation;
-    setSizeCSSValue(sizeCSSValue);
+    setSize(sizeCSSValue);
     return { width, height };
   }, [size, orientation]);
 

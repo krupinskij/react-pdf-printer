@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef } from 'react';
 
 import PrinterContext, { PrinterContextValue } from 'context/PrinterContext';
 import usePageDimensions from 'hooks/usePageDimensions';
+import { getMargin } from 'utilities/getMargin';
 
 import { DocumentConfiguration } from '../model';
 
@@ -10,25 +11,6 @@ type Props = {
   configuration?: DocumentConfiguration;
   printOnly: boolean;
   onLoaded?: () => void;
-};
-
-const getMargin = (element: HTMLElement): { marginTop: number; marginBottom: number } => {
-  const childComputedStyle = window.getComputedStyle(element);
-  const firstChildStyle =
-    element.firstElementChild && window.getComputedStyle(element.firstElementChild);
-  const lastChildStyle =
-    element.lastElementChild && window.getComputedStyle(element.lastElementChild);
-
-  const marginTop = Number(childComputedStyle.marginTop.replace('px', ''));
-  const marginBottom = Number(childComputedStyle.marginBottom.replace('px', ''));
-
-  const firstChildMarginTop = Number(firstChildStyle?.marginTop.replace('px', '') || 0);
-  const lastChildMarginBottom = Number(lastChildStyle?.marginBottom.replace('px', '') || 0);
-
-  return {
-    marginTop: Math.max(marginTop, firstChildMarginTop),
-    marginBottom: Math.max(marginBottom, lastChildMarginBottom),
-  };
 };
 
 const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
@@ -76,14 +58,23 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
       const divisibleElements = main.querySelectorAll<HTMLElement>('[data-printer-divisible]');
       divisibleElements.forEach((divisibleElement) => {
         const { bottom: divElemBottom, top: divElemTop } = divisibleElement.getBoundingClientRect();
-        if (divElemTop < distanceFromTop && divElemBottom > distanceFromTop) {
+        const { marginTop: divElemMarginTop, marginBottom: divElemMarginBottom } =
+          getMargin(divisibleElement);
+
+        if (
+          divElemTop - divElemMarginTop < distanceFromTop &&
+          divElemBottom + divElemMarginBottom > distanceFromTop
+        ) {
           const children = Array.from(divisibleElement.childNodes as NodeListOf<HTMLElement>);
           children.forEach((child) => {
-            const { top, bottom } = child.getBoundingClientRect();
-            const { marginTop, marginBottom } = getMargin(child);
+            const { top: childTop, bottom: childBottom } = child.getBoundingClientRect();
+            const { marginTop: childMarginTop, marginBottom: childMarginBottom } = getMargin(child);
 
-            if (top - marginTop < distanceFromTop && bottom + marginBottom > distanceFromTop) {
-              distanceFromTop = height - footerHeight + top;
+            if (
+              childTop - childMarginTop < distanceFromTop &&
+              childBottom + childMarginTop > distanceFromTop
+            ) {
+              distanceFromTop = height - footerHeight + childTop;
               pagesCount++;
 
               const prevSibling = child.previousElementSibling;
