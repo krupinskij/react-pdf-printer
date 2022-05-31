@@ -126,58 +126,6 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
           article.appendChild(newFooter);
         }
       });
-
-      // divisibleElements.forEach((divisibleElement) => {
-      //   const { bottom: divElemBottom, top: divElemTop } = divisibleElement.getBoundingClientRect();
-      //   const { marginTop: divElemMarginTop, marginBottom: divElemMarginBottom } =
-      //     getMargin(divisibleElement);
-
-      //   if (
-      //     divElemTop - divElemMarginTop < distanceFromTop &&
-      //     divElemBottom + divElemMarginBottom > distanceFromTop
-      //   ) {
-      //     const children = Array.from(divisibleElement.childNodes as NodeListOf<HTMLElement>);
-      //     children.forEach((child) => {
-      //       const { top: childTop, bottom: childBottom } = child.getBoundingClientRect();
-      //       const { marginTop: childMarginTop, marginBottom: childMarginBottom } = getMargin(child);
-
-      //       if (
-      //         childTop - childMarginTop < distanceFromTop &&
-      //         childBottom + childMarginBottom > distanceFromTop
-      //       ) {
-      //         distanceFromTop = height - footerHeight + childTop;
-      //         pagesCount++;
-
-      //         const prevSibling = child.previousElementSibling;
-
-      //         const placeholderElement = document.createElement('div');
-      //         placeholderElement.style.height = `${headerHeight}px`;
-      //         placeholderElement.dataset.printerPlaceholder = 'true';
-      //         divisibleElement.insertBefore(placeholderElement, child);
-
-      //         if (prevSibling) {
-      //           (prevSibling as HTMLElement).style.breakAfter = 'page';
-      //           (prevSibling as HTMLElement).dataset.printerBreak = 'true';
-      //         } else if (divisibleElement.previousSibling) {
-      //           (divisibleElement.previousSibling as HTMLElement).style.breakAfter = 'page';
-      //           (divisibleElement.previousSibling as HTMLElement).dataset.printerBreak = 'true';
-      //         } else {
-      //           placeholderElement.style.breakBefore = 'page';
-      //         }
-
-      //         const newHeader = header.cloneNode(true) as HTMLElement;
-      //         newHeader.style.top = `${pagesCount * 100}vh`;
-      //         newHeader.dataset.printerClone = 'true';
-      //         article.appendChild(newHeader);
-
-      //         const newFooter = footer.cloneNode(true) as HTMLElement;
-      //         newFooter.style.top = `calc(${(pagesCount + 1) * 100}vh - ${footerHeight}px)`;
-      //         newFooter.dataset.printerClone = 'true';
-      //         article.appendChild(newFooter);
-      //       }
-      //     });
-      //   }
-      // });
     });
 
     const { format = '#p / #c', formatPage = '#p', formatCount = '#c' } = pagination;
