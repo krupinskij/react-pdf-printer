@@ -90,7 +90,7 @@ Divisible into many pages component.
 
 Component for marking which page is it. Configured by Document.
 
-**_NOTE_**: This component should be placed in your footer.
+**_NOTE_**: This component should be placed in your header or footer.
 
 ### usePrinter
 
