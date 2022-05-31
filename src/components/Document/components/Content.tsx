@@ -55,56 +55,75 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
         distanceFromTop += prevElemBottom;
       }
 
-      const divisibleElements = main.querySelectorAll<HTMLElement>('[data-printer-divisible]');
-      divisibleElements.forEach((divisibleElement) => {
-        const { bottom: divElemBottom, top: divElemTop } = divisibleElement.getBoundingClientRect();
-        const { marginTop: divElemMarginTop, marginBottom: divElemMarginBottom } =
-          getMargin(divisibleElement);
+      const divisibleElements = Array.from(
+        main.querySelectorAll<HTMLElement>('[data-printer-divisible]')
+      );
+
+      const childrenElems = divisibleElements
+        .flatMap((divisibleElement) =>
+          Array.from(divisibleElement.childNodes as NodeListOf<HTMLElement>).map((child) => ({
+            parent: divisibleElement,
+            child,
+          }))
+        )
+        .sort((elem1, elem2) => {
+          const child1 = elem1.child;
+          const child2 = elem2.child;
+
+          const { top: child1Top } = child1.getBoundingClientRect();
+          const { top: child2Top } = child2.getBoundingClientRect();
+
+          return child1Top - child2Top;
+        });
+
+      childrenElems.forEach((elem) => {
+        const { parent, child } = elem;
+
+        const { bottom: parentBottom, top: parentTop } = parent.getBoundingClientRect();
+        const { marginTop: parentMarginTop, marginBottom: parentMarginBottom } = getMargin(parent);
 
         if (
-          divElemTop - divElemMarginTop < distanceFromTop &&
-          divElemBottom + divElemMarginBottom > distanceFromTop
+          parentTop - parentMarginTop >= distanceFromTop ||
+          parentBottom + parentMarginBottom <= distanceFromTop
+        )
+          return;
+
+        const { top: childTop, bottom: childBottom } = child.getBoundingClientRect();
+        const { marginTop: childMarginTop, marginBottom: childMarginBottom } = getMargin(child);
+
+        if (
+          childTop - childMarginTop < distanceFromTop &&
+          childBottom + childMarginBottom > distanceFromTop
         ) {
-          const children = Array.from(divisibleElement.childNodes as NodeListOf<HTMLElement>);
-          children.forEach((child) => {
-            const { top: childTop, bottom: childBottom } = child.getBoundingClientRect();
-            const { marginTop: childMarginTop, marginBottom: childMarginBottom } = getMargin(child);
+          distanceFromTop = height - footerHeight + childTop;
+          pagesCount++;
 
-            if (
-              childTop - childMarginTop < distanceFromTop &&
-              childBottom + childMarginTop > distanceFromTop
-            ) {
-              distanceFromTop = height - footerHeight + childTop;
-              pagesCount++;
+          const prevSibling = child.previousElementSibling;
 
-              const prevSibling = child.previousElementSibling;
+          const placeholderElement = document.createElement('div');
+          placeholderElement.style.height = `${headerHeight}px`;
+          placeholderElement.dataset.printerPlaceholder = 'true';
+          parent.insertBefore(placeholderElement, child);
 
-              const placeholderElement = document.createElement('div');
-              placeholderElement.style.height = `${headerHeight}px`;
-              placeholderElement.dataset.printerPlaceholder = 'true';
-              divisibleElement.insertBefore(placeholderElement, child);
+          if (prevSibling) {
+            (prevSibling as HTMLElement).style.breakAfter = 'page';
+            (prevSibling as HTMLElement).dataset.printerBreak = 'true';
+          } else if (parent.previousSibling) {
+            (parent.previousSibling as HTMLElement).style.breakAfter = 'page';
+            (parent.previousSibling as HTMLElement).dataset.printerBreak = 'true';
+          } else {
+            placeholderElement.style.breakBefore = 'page';
+          }
 
-              if (prevSibling) {
-                (prevSibling as HTMLElement).style.breakAfter = 'page';
-                (prevSibling as HTMLElement).dataset.printerBreak = 'true';
-              } else if (divisibleElement.previousSibling) {
-                (divisibleElement.previousSibling as HTMLElement).style.breakAfter = 'page';
-                (divisibleElement.previousSibling as HTMLElement).dataset.printerBreak = 'true';
-              } else {
-                placeholderElement.style.breakBefore = 'page';
-              }
+          const newHeader = header.cloneNode(true) as HTMLElement;
+          newHeader.style.top = `${pagesCount * 100}vh`;
+          newHeader.dataset.printerClone = 'true';
+          article.appendChild(newHeader);
 
-              const newHeader = header.cloneNode(true) as HTMLElement;
-              newHeader.style.top = `${pagesCount * 100}vh`;
-              newHeader.dataset.printerClone = 'true';
-              article.appendChild(newHeader);
-
-              const newFooter = footer.cloneNode(true) as HTMLElement;
-              newFooter.style.top = `calc(${(pagesCount + 1) * 100}vh - ${footerHeight}px)`;
-              newFooter.dataset.printerClone = 'true';
-              article.appendChild(newFooter);
-            }
-          });
+          const newFooter = footer.cloneNode(true) as HTMLElement;
+          newFooter.style.top = `calc(${(pagesCount + 1) * 100}vh - ${footerHeight}px)`;
+          newFooter.dataset.printerClone = 'true';
+          article.appendChild(newFooter);
         }
       });
     });
