@@ -10,7 +10,7 @@ type Props = {
   children: React.ReactNode;
   configuration?: DocumentConfiguration;
   printOnly: boolean;
-  onLoaded?: () => void;
+  onLoaded: () => void;
 };
 
 const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
@@ -137,7 +137,7 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
         .replaceAll(formatCount, String(pagesCount + 1))}'`
     );
 
-    onLoaded && onLoaded();
+    onLoaded();
 
     return () => {
       const brokens =
