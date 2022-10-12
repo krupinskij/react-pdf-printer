@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 
-import PrinterContext, { PrinterContextValue } from 'context/PrinterContext';
+import PrinterContext, { PrinterContextValue } from 'context/printer/PrinterContext';
 import usePageDimensions from 'hooks/usePageDimensions';
 import { getMargin } from 'utilities/getMargin';
 
