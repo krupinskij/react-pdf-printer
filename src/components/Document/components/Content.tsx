@@ -61,14 +61,37 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
 
       const childrenElems = divisibleElements
         .flatMap((divisibleElement) =>
-          Array.from(divisibleElement.childNodes as NodeListOf<HTMLElement>).map((child) => ({
-            parent: divisibleElement,
-            child,
-          }))
+          Array.from(divisibleElement.childNodes as NodeListOf<HTMLElement>).map(
+            (child, index, arr) => {
+              if (child.dataset.printerOmit === 'true') {
+                delete child.dataset.printerOmit;
+                return {
+                  parent: divisibleElement,
+                  topChild: divisibleElement,
+                  bottomChild: divisibleElement,
+                };
+              }
+
+              const span = Math.max(Number(child.dataset.printerSpan) || 1, 1) - 1;
+              const bottomChildIndex = Math.min(index + span, arr.length - 1);
+              const bottomChild = arr[bottomChildIndex];
+
+              for (let i = index + 1; i <= index + span; i++) {
+                arr[i].dataset.printOmit = 'true';
+              }
+
+              return {
+                parent: divisibleElement,
+                topChild: child,
+                bottomChild,
+              };
+            }
+          )
         )
+        .filter((elem) => elem.parent !== elem.topChild)
         .sort((elem1, elem2) => {
-          const child1 = elem1.child;
-          const child2 = elem2.child;
+          const child1 = elem1!.topChild;
+          const child2 = elem2!.topChild;
 
           const { top: child1Top } = child1.getBoundingClientRect();
           const { top: child2Top } = child2.getBoundingClientRect();
@@ -77,7 +100,7 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
         });
 
       childrenElems.forEach((elem) => {
-        const { parent, child } = elem;
+        const { parent, topChild, bottomChild } = elem;
 
         const { bottom: parentBottom, top: parentTop } = parent.getBoundingClientRect();
         const { marginTop: parentMarginTop, marginBottom: parentMarginBottom } = getMargin(parent);
@@ -88,8 +111,11 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
         )
           return;
 
-        const { top: childTop, bottom: childBottom } = child.getBoundingClientRect();
-        const { marginTop: childMarginTop, marginBottom: childMarginBottom } = getMargin(child);
+        const { top: childTop } = topChild.getBoundingClientRect();
+        const { marginTop: childMarginTop } = getMargin(topChild);
+
+        const { bottom: childBottom } = bottomChild.getBoundingClientRect();
+        const { marginBottom: childMarginBottom } = getMargin(bottomChild);
 
         if (
           childTop - childMarginTop < distanceFromTop &&
@@ -98,12 +124,12 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
           distanceFromTop = height - footerHeight + childTop;
           pagesCount++;
 
-          const prevSibling = child.previousElementSibling;
+          const prevSibling = topChild.previousElementSibling;
 
           const placeholderElement = document.createElement('div');
           placeholderElement.style.height = `${headerHeight}px`;
           placeholderElement.dataset.printerPlaceholder = 'true';
-          parent.insertBefore(placeholderElement, child);
+          parent.insertBefore(placeholderElement, topChild);
 
           if (prevSibling) {
             (prevSibling as HTMLElement).style.breakAfter = 'page';
