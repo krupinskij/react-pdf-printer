@@ -1,6 +1,9 @@
 import { useContext } from 'react';
 
-import PrinterContext, { PrinterContextValue, UsePrinterType } from 'context/PrinterContext';
+import PrinterContext, {
+  PrinterContextValue,
+  UsePrinterType,
+} from 'context/printer/PrinterContext';
 
 const usePrinter = (key?: string): UsePrinterType => {
   const contextValue = useContext<PrinterContextValue | null>(PrinterContext);
