@@ -97,48 +97,41 @@ Component for marking which page is it. Configured by Document.
 Printer hook
 
 ```typescript
-const { isPrinter, subscribe, run } = usePrinter();
+const { isPrinter, subscribe, run } = usePrinter(key?: string);
 ```
 
-| Name      | Desc                                                       | Type                  |
-| --------- | ---------------------------------------------------------- | --------------------- |
-| isPrinter | Value indicating if it component inside Document component | boolean               |
-| subscribe | Function subscribing loading content                       | (key: string) => void |
-| run       | Function running loading content                           | (key: string) => void |
+| Name      | Desc                                                       | Type       |
+| --------- | ---------------------------------------------------------- | ---------- |
+| isPrinter | Value indicating if it component inside Document component | boolean    |
+| subscribe | Function stoping content from loading                      | () => void |
+| run       | Function running loading of content                        | () => void |
 
-`subscribe` and `run` functions are useful when you are fetching some data from backend and don't want to print your document immediately
+`subscribe` and `run` functions are useful when dealing with some asynchronous code (e.g. fetching some data from backend) and not wanting to print document immediately
 
 ```tsx
 const MyComponent = () => {
-  const [data, setData] = useState([]);
-  const { subscribe, run } = usePrinter();
+  const { subscribe, run } = usePrinter('my-unique-key');
 
   useEffect(() => {
-    subscribe('my-unique-key');
+    subscribe();
 
-    const newData = fetchData();
-    setData(newData);
+    // document won't be printed until 10 seconds pass
+    const timeout = setTimeout(() => {
+      run();
+    }, 10000);
+
+    return () => clearTimeout(timeout);
   }, []);
 
-  useEffect(() => {
-    if (data.length === 0) return;
-
-    run('my-unique-key');
-  }, [data, run]);
-
-  return (
-    <>
-      {data.map((elem) => (
-        <div key={elem.id}>{elem.value}</div>
-      ))}
-    </>
-  );
+  return <div>Some content</div>;
 };
 ```
 
-**_NOTE_**: Running `subscribe` or `run` functions outside Document throws an error.
+**_NOTE_**: Running `subscribe` and `run` from `usePrinter` with no `key` passed or outside `Document` has no effect (they are empty functions).
 
-**_NOTE_**: Using `subscribe` and `run` functions makes sense only when `isAsync` flag is set to `true`.
+**_NOTE_**: Using `subscribe` and `run` functions works only when `isAsync` flag is set to `true`.
+
+**_NOTE_**: Setting `isAsync` flag to `true` and not running neither `subscribe` nor `run` functions blocks printing.
 
 ## Development
 
