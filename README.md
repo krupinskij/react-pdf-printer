@@ -64,7 +64,7 @@ Document is a top level component wrapped around the other ones and configuratin
 
 ### Page
 
-Undivisible into many pages component.
+Component undivisible into many pages.
 
 | Name     | Desc                 | Type            | Required | Default value             |
 | -------- | -------------------- | --------------- | -------- | ------------------------- |
@@ -72,11 +72,11 @@ Undivisible into many pages component.
 | footer   | Footer for the page  | React.ReactNode | no       | (default Document footer) |
 | children | Content for the page | React.ReactNode | yes      | ---                       |
 
-**_NOTE_**: If the content of the Page is larger than the height of the page overflow content isn't visible.
+**_NOTE_**: If the content of the Page is larger than the height of the page overflow content is hidden.
 
 ### View
 
-Divisible into many pages component.
+Component divisible into many pages.
 
 | Name     | Desc                 | Type            | Required | Default value             |
 | -------- | -------------------- | --------------- | -------- | ------------------------- |
@@ -86,11 +86,13 @@ Divisible into many pages component.
 
 **_NOTE_**: Inner components that can be divided into many pages should have `data-printer-divisible` attribute. Rare use of this attribute can cause overflowed content and weird behaviour.
 
+**_NOTE_**: Both `Page` and `View` have to be placed inside `Document` component.
+
 ### Pagination
 
 Component for marking which page is it. Configured by Document.
 
-**_NOTE_**: This component should be placed in your header or footer.
+**_NOTE_**: This component should be placed only in your header or footer.
 
 ### usePrinter
 
