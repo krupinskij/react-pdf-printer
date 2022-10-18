@@ -72,7 +72,24 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
                 };
               }
 
-              const span = Math.max(Number(child.dataset.printerSpan) || 1, 1) - 1;
+              const printerSpan = child.dataset.printerSpan;
+              if (!printerSpan) {
+                return {
+                  parent: divisibleElement,
+                  topChild: child,
+                  bottomChild: child,
+                };
+              }
+
+              const span = Math.max(parseInt(printerSpan) || 1, 1) - 1;
+              if (span === 0) {
+                return {
+                  parent: divisibleElement,
+                  topChild: child,
+                  bottomChild: child,
+                };
+              }
+
               const bottomChildIndex = Math.min(index + span, arr.length - 1);
               const bottomChild = arr[bottomChildIndex];
 
