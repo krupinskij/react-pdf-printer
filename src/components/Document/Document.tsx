@@ -21,7 +21,7 @@ const Document = ({ header, footer, children, screen, configuration, onLoaded }:
 
   const handleLoaded = useCallback(() => {
     setIsLoading(false);
-    onLoaded?.();
+    setTimeout(() => onLoaded?.(), 0);
   }, [onLoaded, setIsLoading]);
 
   const screenChild = typeof screen === 'function' ? screen(isLoading) : screen;
