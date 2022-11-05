@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef } from 'react';
 
 import PrinterContext, { PrinterContextValue } from 'context/printer/PrinterContext';
 import usePageDimensions from 'hooks/usePageDimensions';
-import { getMargin } from 'utilities/getMargin';
+import { getBoundary } from 'utilities/getBoundary';
 
 import { DocumentConfiguration } from '../model';
 
@@ -119,8 +119,12 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
       childrenElems.forEach((elem) => {
         const { parent, topChild, bottomChild } = elem;
 
-        const { bottom: parentBottom, top: parentTop } = parent.getBoundingClientRect();
-        const { marginTop: parentMarginTop, marginBottom: parentMarginBottom } = getMargin(parent);
+        const {
+          top: parentTop,
+          bottom: parentBottom,
+          marginTop: parentMarginTop,
+          marginBottom: parentMarginBottom,
+        } = getBoundary(parent);
 
         if (
           parentTop - parentMarginTop >= distanceFromTop ||
@@ -128,11 +132,12 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
         )
           return;
 
-        const { top: childTop } = topChild.getBoundingClientRect();
-        const { marginTop: childMarginTop } = getMargin(topChild);
-
-        const { bottom: childBottom } = bottomChild.getBoundingClientRect();
-        const { marginBottom: childMarginBottom } = getMargin(bottomChild);
+        const {
+          top: childTop,
+          bottom: childBottom,
+          marginTop: childMarginTop,
+          marginBottom: childMarginBottom,
+        } = getBoundary(topChild, bottomChild);
 
         if (
           childTop - childMarginTop < distanceFromTop &&
