@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 
 import PrinterContext, {
   PrinterContextValue,
@@ -10,13 +10,17 @@ const usePrinter = (key?: string): UsePrinterType => {
   if (!contextValue || !key) {
     return {
       isPrinter: !!contextValue,
-      subscribe: () => {},
-      run: () => {},
+      subscribe: useCallback(() => {}, []),
+      run: useCallback(() => {}, []),
     };
   }
 
   const { isPrinter, subscribe, run } = contextValue;
-  return { isPrinter, subscribe: () => subscribe(key), run: () => run(key) };
+
+  const subscribeCallback = useCallback(() => subscribe(key), [subscribe, key]);
+  const runCallback = useCallback(() => run(key), [run, key]);
+
+  return { isPrinter, subscribe: subscribeCallback, run: runCallback };
 };
 
 export default usePrinter;

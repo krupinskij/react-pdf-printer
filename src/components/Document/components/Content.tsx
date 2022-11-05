@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef } from 'react';
 
 import PrinterContext, { PrinterContextValue } from 'context/printer/PrinterContext';
 import usePageDimensions from 'hooks/usePageDimensions';
-import { getMargin } from 'utilities/getMargin';
+import { getBoundary } from 'utilities/getBoundary';
 
 import { DocumentConfiguration } from '../model';
 
@@ -11,6 +11,12 @@ type Props = {
   configuration?: DocumentConfiguration;
   printOnly: boolean;
   onLoaded: () => void;
+};
+
+type DivisibleElement = {
+  parent: HTMLElement;
+  topChild: HTMLElement;
+  bottomChild: HTMLElement;
 };
 
 const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
@@ -59,10 +65,12 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
         main.querySelectorAll<HTMLElement>('[data-printer-divisible]')
       );
 
-      const childrenElems = divisibleElements
-        .flatMap((divisibleElement) =>
-          Array.from(divisibleElement.childNodes as NodeListOf<HTMLElement>).map(
-            (child, index, arr) => {
+      const childrenElems = divisibleElements.reduce(
+        (accArray: DivisibleElement[], divisibleElement) => {
+          const childrenArray: DivisibleElement[] = Array.from(
+            divisibleElement.childNodes as NodeListOf<HTMLElement>
+          )
+            .map((child, index, arr) => {
               if (child.dataset.printerOmit === 'true') {
                 delete child.dataset.printerOmit;
                 return {
@@ -102,25 +110,54 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
                 topChild: child,
                 bottomChild,
               };
+            })
+            .filter((elem) => elem.parent !== elem.topChild);
+
+          const mergeArray = [];
+          for (let i = 0, j = 0; i < accArray.length || j < childrenArray.length; ) {
+            if (i >= accArray.length) {
+              mergeArray.push(childrenArray[j]);
+              j++;
+              continue;
             }
-          )
-        )
-        .filter((elem) => elem.parent !== elem.topChild)
-        .sort((elem1, elem2) => {
-          const child1 = elem1!.topChild;
-          const child2 = elem2!.topChild;
 
-          const { top: child1Top } = child1.getBoundingClientRect();
-          const { top: child2Top } = child2.getBoundingClientRect();
+            if (j >= childrenArray.length) {
+              mergeArray.push(accArray[i]);
+              i++;
+              continue;
+            }
 
-          return child1Top - child2Top;
-        });
+            const child1 = accArray[i].topChild;
+            const child2 = childrenArray[j].topChild;
+
+            const { top: child1Top } = child1.getBoundingClientRect();
+            const { top: child2Top } = child2.getBoundingClientRect();
+
+            const dist = child1Top - child2Top;
+
+            if (dist > 0) {
+              mergeArray.push(childrenArray[j]);
+              j++;
+            } else {
+              mergeArray.push(accArray[i]);
+              i++;
+            }
+          }
+
+          return mergeArray;
+        },
+        []
+      );
 
       childrenElems.forEach((elem) => {
         const { parent, topChild, bottomChild } = elem;
 
-        const { bottom: parentBottom, top: parentTop } = parent.getBoundingClientRect();
-        const { marginTop: parentMarginTop, marginBottom: parentMarginBottom } = getMargin(parent);
+        const {
+          top: parentTop,
+          bottom: parentBottom,
+          marginTop: parentMarginTop,
+          marginBottom: parentMarginBottom,
+        } = getBoundary(parent);
 
         if (
           parentTop - parentMarginTop >= distanceFromTop ||
@@ -128,11 +165,12 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
         )
           return;
 
-        const { top: childTop } = topChild.getBoundingClientRect();
-        const { marginTop: childMarginTop } = getMargin(topChild);
-
-        const { bottom: childBottom } = bottomChild.getBoundingClientRect();
-        const { marginBottom: childMarginBottom } = getMargin(bottomChild);
+        const {
+          top: childTop,
+          bottom: childBottom,
+          marginTop: childMarginTop,
+          marginBottom: childMarginBottom,
+        } = getBoundary(topChild, bottomChild);
 
         if (
           childTop - childMarginTop < distanceFromTop &&
