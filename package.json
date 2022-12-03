@@ -1,6 +1,6 @@
 {
   "name": "react-pdf-printer",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Create pdf document using React",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",

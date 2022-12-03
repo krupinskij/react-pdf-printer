@@ -65,89 +65,85 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
         main.querySelectorAll<HTMLElement>('[data-printer-divisible]')
       );
 
-      const childrenElems = divisibleElements.reduce(
-        (accArray: DivisibleElement[], divisibleElement) => {
-          const childrenArray: DivisibleElement[] = Array.from(
-            divisibleElement.childNodes as NodeListOf<HTMLElement>
-          )
-            .map((child, index, arr) => {
-              if (child.dataset.printerOmit === 'true') {
-                delete child.dataset.printerOmit;
-                return {
-                  parent: divisibleElement,
-                  topChild: divisibleElement,
-                  bottomChild: divisibleElement,
-                };
-              }
+      let childrenElems: DivisibleElement[] = [];
+      for (let dI = 0; dI < divisibleElements.length; dI++) {
+        const divisibleElement = divisibleElements[dI];
+        const childrenArray = Array.from(divisibleElement.childNodes as NodeListOf<HTMLElement>);
 
-              const printerSpan = child.dataset.printerSpan;
-              if (!printerSpan) {
-                return {
-                  parent: divisibleElement,
-                  topChild: child,
-                  bottomChild: child,
-                };
-              }
+        const filteredArray: DivisibleElement[] = [];
+        for (let i = 0; i < childrenArray.length; ) {
+          const child = childrenArray[i];
 
-              const span = Math.max(parseInt(printerSpan) || 1, 1) - 1;
-              if (span === 0) {
-                return {
-                  parent: divisibleElement,
-                  topChild: child,
-                  bottomChild: child,
-                };
-              }
-
-              const bottomChildIndex = Math.min(index + span, arr.length - 1);
-              const bottomChild = arr[bottomChildIndex];
-
-              for (let i = index + 1; i <= index + span; i++) {
-                arr[i].dataset.printOmit = 'true';
-              }
-
-              return {
-                parent: divisibleElement,
-                topChild: child,
-                bottomChild,
-              };
-            })
-            .filter((elem) => elem.parent !== elem.topChild);
-
-          const mergeArray = [];
-          for (let i = 0, j = 0; i < accArray.length || j < childrenArray.length; ) {
-            if (i >= accArray.length) {
-              mergeArray.push(childrenArray[j]);
-              j++;
-              continue;
-            }
-
-            if (j >= childrenArray.length) {
-              mergeArray.push(accArray[i]);
-              i++;
-              continue;
-            }
-
-            const child1 = accArray[i].topChild;
-            const child2 = childrenArray[j].topChild;
-
-            const { top: child1Top } = child1.getBoundingClientRect();
-            const { top: child2Top } = child2.getBoundingClientRect();
-
-            const dist = child1Top - child2Top;
-
-            if (dist > 0) {
-              mergeArray.push(childrenArray[j]);
-              j++;
-            } else {
-              mergeArray.push(accArray[i]);
-              i++;
-            }
+          const printerSpan = child.dataset.printerSpan;
+          if (!printerSpan) {
+            filteredArray.push({
+              parent: divisibleElement,
+              topChild: child,
+              bottomChild: child,
+            });
+            i++;
+            continue;
           }
 
-          return mergeArray;
-        },
-        []
-      );
+          const span = Math.max(parseInt(printerSpan) || 1, 1);
+          if (span === 1) {
+            filteredArray.push({
+              parent: divisibleElement,
+              topChild: child,
+              bottomChild: child,
+            });
+            i++;
+            continue;
+          }
+
+          const bottomChildIndex = Math.min(i + span, childrenArray.length) - 1;
+          const bottomChild = childrenArray[bottomChildIndex];
+
+          filteredArray.push({
+            parent: divisibleElement,
+            topChild: child,
+            bottomChild,
+          });
+
+          i += span;
+        }
+
+        const mergeArray: DivisibleElement[] = [];
+        for (let i = 0, j = 0; i < childrenElems.length || j < filteredArray.length; ) {
+          if (i >= childrenElems.length) {
+            mergeArray.push(...filteredArray.slice(j));
+            break;
+          }
+
+          if (j >= filteredArray.length) {
+            mergeArray.push(...childrenElems.slice(i));
+            break;
+          }
+
+          const newChild = filteredArray[j].topChild;
+          const { top: newChildTop } = newChild.getBoundingClientRect();
+
+          let end = i;
+          while (true) {
+            const oldChild = childrenElems[end].topChild;
+            const { top: oldChildTop } = oldChild.getBoundingClientRect();
+
+            const dist = newChildTop - oldChildTop;
+
+            if (dist < 0) break;
+
+            end++;
+
+            if (end >= childrenElems.length) break;
+          }
+
+          mergeArray.push(...childrenElems.slice(i, end), filteredArray[j]);
+          i = end;
+          j++;
+        }
+
+        childrenElems = mergeArray;
+      }
 
       childrenElems.forEach((elem) => {
         const { parent, topChild, bottomChild } = elem;
