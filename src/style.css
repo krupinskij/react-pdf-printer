@@ -22,7 +22,11 @@ body {
 
 [data-printer-type='page'] {
   height: 100vh;
-  overflow-y: hidden;
+  overflow: hidden;
+}
+
+[data-printer-type='view'] {
+  overflow-x: hidden;
 }
 
 [data-printer-type='page']:not(:last-child),
