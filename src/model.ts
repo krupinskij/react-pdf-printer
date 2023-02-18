@@ -37,7 +37,7 @@ export type DocumentProps = {
   configuration?: DeepPartial<DocumentConfiguration>;
   header: React.ReactNode;
   footer: React.ReactNode;
-  onPrint?: () => void;
+  onRender?: () => void;
   children: React.ReactNode;
 };
 

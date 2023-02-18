@@ -6,7 +6,8 @@ import { getBoundary } from 'utilities/getBoundary';
 
 type Props = {
   children: React.ReactNode;
-  onPrint: () => void;
+  isRendering: boolean;
+  onRender: () => void;
 };
 
 type DivisibleElement = {
@@ -15,15 +16,22 @@ type DivisibleElement = {
   bottomChild: HTMLElement;
 };
 
-const Content = ({ children, onPrint }: Props) => {
+const Content = ({ children, isRendering, onRender }: Props) => {
   const { configuration, isPending } = useDocumentContext();
   const { pagination, orientation, size } = configuration;
 
   const documentRef = useRef<HTMLDivElement>(null);
   const { height, width } = usePageDimensions(size, orientation);
 
+  const wasRendered = useRef(false);
+
   useEffect(() => {
-    if (isPending || !documentRef.current) return;
+    if (isPending || !isRendering || !documentRef.current) return;
+
+    if (wasRendered.current) {
+      onRender();
+      return;
+    }
 
     const articles = documentRef.current.querySelectorAll<HTMLElement>(
       '[data-printer-article="page"], [data-printer-article="pages"]'
@@ -210,7 +218,8 @@ const Content = ({ children, onPrint }: Props) => {
         .replaceAll(formatCount, String(pagesCount + 1))}'`
     );
 
-    onPrint();
+    wasRendered.current = true;
+    onRender();
 
     return () => {
       const brokens =
@@ -232,8 +241,10 @@ const Content = ({ children, onPrint }: Props) => {
       clones.forEach((elem) => {
         elem.remove();
       });
+
+      wasRendered.current = false;
     };
-  }, [isPending, height, pagination, onPrint]);
+  }, [isPending, isRendering, height, pagination, onRender]);
   return (
     <div
       ref={documentRef}
