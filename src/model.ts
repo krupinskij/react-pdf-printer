@@ -2,11 +2,11 @@ import React from 'react';
 
 import { DeepPartial } from 'utilities/helperTypes';
 
-type Orientation = 'landscape' | 'portrait';
+export type Orientation = 'landscape' | 'portrait';
 
-type Size = number | [number, number] | PageSize;
+export type Size = number | [number, number] | PageSize;
 
-type PageSize =
+export type PageSize =
   | 'a3'
   | 'a4'
   | 'a5'
@@ -18,7 +18,7 @@ type PageSize =
   | 'legal'
   | 'ledger';
 
-type Pagination = {
+export type Pagination = {
   format: string;
   formatPage: string;
   formatCount: string;

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 
-import Content from 'components/Content';
+import Content from 'components/Document/Content';
 import DocumentProvider from 'context/document/DocumentProvider';
 import { DocumentProps } from 'model';
 

@@ -1,17 +1,18 @@
 import React from 'react';
 
-import useDocument from 'context/document2/useDocument';
 import useDocumentContext from 'context/document/useDocumentContext';
 
-import { ArticleProps } from '../../model';
-import Footer from '../sections/Footer';
-import Header from '../sections/Header';
-import Content from '../sections/Main';
+import Footer from '../Section/Footer';
+import Header from '../Section/Header';
+import Content from '../Section/Main';
+import { ArticleProps } from '../model';
 
-const Page = ({ header, footer, children }: ArticleProps) => {
+export type PageProps = ArticleProps;
+
+const Page = ({ header, footer, children }: PageProps) => {
   const { header: documentHeader, footer: documentFooter } = useDocumentContext();
   return (
-    <article data-printer-type="page">
+    <article data-printer-article="page">
       <Header>{header || documentHeader}</Header>
       <Footer>{footer || documentFooter}</Footer>
       <Content>{children}</Content>

@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 import useDocumentContext from 'context/document/useDocumentContext';
 
-type UsePrinterResult = {
+export type UsePrinterResult = {
   isPrinter: boolean;
   subscribe: () => void;
   run: () => void;

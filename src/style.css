@@ -20,28 +20,27 @@ body {
   counter-reset: printer-page;
 }
 
-[data-printer-type='page'] {
+[data-printer-article='page'] {
   height: 100vh;
   overflow: hidden;
 }
 
-[data-printer-type='view'] {
+[data-printer-article='pages'] {
   overflow-x: hidden;
 }
 
-[data-printer-type='page']:not(:last-child),
-[data-printer-type='view']:not(:last-child) {
+[data-printer-article]:not(:last-child) {
   break-after: page;
 }
 
-[data-printer-component='header'],
-[data-printer-component='footer'] {
+[data-printer-section='header'],
+[data-printer-section='footer'] {
   position: absolute;
   left: 0;
   right: 0;
 }
 
-[data-printer-component='header'] {
+[data-printer-section='header'] {
   counter-increment: printer-page;
 }
 
