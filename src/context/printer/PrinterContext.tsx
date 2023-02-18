@@ -1,16 +1,9 @@
 import { createContext } from 'react';
 
-export type PrinterContextValue = {
-  isPrinter: boolean;
-  isLoading: boolean;
-  subscribe: (Key: string) => void;
-  run: (key: string) => void;
-};
+import { PrinterConfiguration } from 'model';
 
-export type UsePrinterType = {
-  isPrinter: boolean;
-  subscribe: () => void;
-  run: () => void;
+export type PrinterContextValue = {
+  configuration: PrinterConfiguration;
 };
 
 const PrinterContext = createContext<PrinterContextValue | null>(null);

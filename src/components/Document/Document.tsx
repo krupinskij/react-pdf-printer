@@ -1,7 +1,7 @@
 import React, { ReactNode, useState, useCallback } from 'react';
 
-import DocumentProvider from 'context/document/DocumentProvider';
-import PrinterProvider from 'context/printer/PrinterProvider';
+import DocumentProvider from 'context/document2/DocumentProvider';
+import PrinterProvider from 'context/printer2/PrinterProvider';
 
 import Content from './components/Content';
 import { DocumentConfiguration } from './model';

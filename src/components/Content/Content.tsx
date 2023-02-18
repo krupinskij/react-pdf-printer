@@ -2,15 +2,14 @@ import React, { useContext, useEffect, useRef } from 'react';
 
 import PrinterContext, { PrinterContextValue } from 'context/printer2/PrinterContext';
 import usePageDimensions from 'hooks/usePageDimensions';
+import { DocumentConfiguration } from 'model';
 import { getBoundary } from 'utilities/getBoundary';
-
-import { DocumentConfiguration } from '../model';
 
 type Props = {
   children: React.ReactNode;
   configuration?: DocumentConfiguration;
   printOnly: boolean;
-  onLoaded: () => void;
+  onPrint: () => void;
 };
 
 type DivisibleElement = {
@@ -19,8 +18,8 @@ type DivisibleElement = {
   bottomChild: HTMLElement;
 };
 
-const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
-  const { size = 'a4', orientation = 'portrait', pagination = {} } = configuration || {};
+const Content = ({ children, configuration, printOnly, onPrint }: Props) => {
+  const { pagination = {} } = configuration || {};
 
   const documentRef = useRef<HTMLDivElement>(null);
   const { isLoading } = useContext<PrinterContextValue | null>(PrinterContext)!;

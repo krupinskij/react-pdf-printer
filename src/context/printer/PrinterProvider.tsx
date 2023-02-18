@@ -1,56 +1,16 @@
-import React, { useCallback, useEffect, useReducer, useState } from 'react';
+import React from 'react';
 
-import PrinterContext, { PrinterContextValue } from './PrinterContext';
+import { PrinterConfiguration } from 'model';
 
-interface Props {
-  isAsync: boolean;
+import PrinterContext from './PrinterContext';
+
+export type PrinterProviderProps = {
+  configuration?: PrinterConfiguration;
   children: React.ReactNode;
-}
-
-type ReducerAction = {
-  key: string;
-  type: 'subscribe' | 'run';
 };
 
-const reducer = (state: Record<string, boolean>, { key, type }: ReducerAction) => {
-  switch (type) {
-    case 'subscribe':
-      return { ...state, [key]: false };
-
-    case 'run':
-      return { ...state, [key]: true };
-  }
-};
-
-const PrinterProvider = ({ isAsync, children }: Props) => {
-  const [state, dispatch] = useReducer(reducer, {});
-  const [isLoading, setIsLoading] = useState(true);
-
-  const subscribe = useCallback((key: string) => {
-    dispatch({ key, type: 'subscribe' });
-  }, []);
-  const run = useCallback((key: string) => {
-    dispatch({ key, type: 'run' });
-  }, []);
-
-  useEffect(() => {
-    if (isAsync) {
-      const values = Object.values(state);
-      const isSomeNotReady = values.some((isReady) => !isReady);
-      setIsLoading(values.length === 0 || isSomeNotReady);
-    } else {
-      setIsLoading(false);
-    }
-  }, [state, isAsync]);
-
-  const value: PrinterContextValue = {
-    isPrinter: true,
-    subscribe,
-    run,
-    isLoading,
-  };
-
-  return <PrinterContext.Provider value={value}>{children}</PrinterContext.Provider>;
+const PrinterProvider = ({ configuration = {}, children }: PrinterProviderProps) => {
+  return <PrinterContext.Provider value={{ configuration }}>{children}</PrinterContext.Provider>;
 };
 
 export default PrinterProvider;

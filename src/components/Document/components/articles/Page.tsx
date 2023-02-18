@@ -1,6 +1,6 @@
 import React from 'react';
 
-import useDocument from 'context/document/useDocument';
+import useDocument from 'context/document2/useDocument';
 
 import { ArticleProps } from '../../model';
 import Footer from '../sections/Footer';
