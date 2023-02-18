@@ -56,7 +56,7 @@ export default [
       resolveNonExternals({
         dir: 'dist/esm/types',
         extension: '.d.ts',
-        nonExternals: ['components', 'context', 'hooks'],
+        nonExternals: ['components', 'context', 'hooks', 'utilities', 'model'],
       }),
       dts(),
       postcss(),

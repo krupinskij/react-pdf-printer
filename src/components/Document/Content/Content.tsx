@@ -1,16 +1,12 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import PrinterContext, { PrinterContextValue } from 'context/printer/PrinterContext';
+import useDocumentContext from 'context/document/useDocumentContext';
 import usePageDimensions from 'hooks/usePageDimensions';
 import { getBoundary } from 'utilities/getBoundary';
 
-import { DocumentConfiguration } from '../model';
-
 type Props = {
   children: React.ReactNode;
-  configuration?: DocumentConfiguration;
-  printOnly: boolean;
-  onLoaded: () => void;
+  onPrint: () => void;
 };
 
 type DivisibleElement = {
@@ -19,24 +15,24 @@ type DivisibleElement = {
   bottomChild: HTMLElement;
 };
 
-const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
-  const { size = 'a4', orientation = 'portrait', pagination = {} } = configuration || {};
+const Content = ({ children, onPrint }: Props) => {
+  const { configuration, isPending } = useDocumentContext();
+  const { pagination, orientation, size } = configuration;
 
   const documentRef = useRef<HTMLDivElement>(null);
-  const { isLoading } = useContext<PrinterContextValue | null>(PrinterContext)!;
   const { height, width } = usePageDimensions(size, orientation);
 
   useEffect(() => {
-    if (isLoading || !documentRef.current) return;
+    if (isPending || !documentRef.current) return;
 
     const articles = documentRef.current.querySelectorAll<HTMLElement>(
-      '[data-printer-type="page"], [data-printer-type="view"]'
+      '[data-printer-article="page"], [data-printer-article="pages"]'
     );
     let pagesCount = -1;
     articles.forEach((article) => {
-      const header = article.querySelector<HTMLElement>('[data-printer-component="header"]');
-      const footer = article.querySelector<HTMLElement>('[data-printer-component="footer"]');
-      const main = article.querySelector<HTMLElement>('[data-printer-component="main"]');
+      const header = article.querySelector<HTMLElement>('[data-printer-section="header"]');
+      const footer = article.querySelector<HTMLElement>('[data-printer-section="footer"]');
+      const main = article.querySelector<HTMLElement>('[data-printer-section="main"]');
 
       if (!main || !header || !footer) return;
 
@@ -53,7 +49,7 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
       placeholderElement.dataset.printerPlaceholder = 'true';
       article.insertBefore(placeholderElement, main);
 
-      if (article.dataset.printerType === 'page') return;
+      if (article.dataset.printerArticle === 'page') return;
 
       let distanceFromTop = height - footerHeight;
       if (article.previousElementSibling) {
@@ -214,7 +210,7 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
         .replaceAll(formatCount, String(pagesCount + 1))}'`
     );
 
-    onLoaded();
+    onPrint();
 
     return () => {
       const brokens =
@@ -237,13 +233,13 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
         elem.remove();
       });
     };
-  }, [isLoading, height, pagination, onLoaded]);
+  }, [isPending, height, pagination, onPrint]);
   return (
     <div
       ref={documentRef}
       style={{ width: Math.floor(width) }}
       data-printer-type="document"
-      data-printer-printonly={printOnly}
+      data-printer-printonly={true}
     >
       {children}
     </div>

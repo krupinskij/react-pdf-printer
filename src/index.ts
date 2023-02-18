@@ -1,4 +1,5 @@
 import './style.css';
 
 export * from './components';
-export { default as usePrinter } from './hooks/usePrinter';
+export * from './hooks';
+export * from './context';

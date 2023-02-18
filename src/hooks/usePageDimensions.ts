@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { Orientation, PageSize, Size } from 'components/Document/model';
+import { Orientation, PageSize, Size } from 'model';
 import { setSize } from 'utilities/setSize';
 
 const sizeMap: Record<PageSize, { width: number; height: number }> = {
