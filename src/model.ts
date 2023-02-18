@@ -1,10 +1,12 @@
 import React from 'react';
 
-export type Orientation = 'landscape' | 'portrait';
+import { DeepPartial } from 'utilities/helperTypes';
 
-export type Size = number | [number, number] | PageSize;
+type Orientation = 'landscape' | 'portrait';
 
-export type PageSize =
+type Size = number | [number, number] | PageSize;
+
+type PageSize =
   | 'a3'
   | 'a4'
   | 'a5'
@@ -16,7 +18,7 @@ export type PageSize =
   | 'legal'
   | 'ledger';
 
-export type Pagination = {
+type Pagination = {
   format: string;
   formatPage: string;
   formatCount: string;
@@ -32,11 +34,10 @@ export type PrinterConfiguration = {
 export type DocumentConfiguration = Omit<PrinterConfiguration, 'orientation' | 'size'>;
 
 export type DocumentProps = {
-  configuration?: DocumentConfiguration;
+  configuration?: DeepPartial<DocumentConfiguration>;
   header: React.ReactNode;
   footer: React.ReactNode;
   onPrint?: () => void;
-  title?: string;
   children: React.ReactNode;
 };
 

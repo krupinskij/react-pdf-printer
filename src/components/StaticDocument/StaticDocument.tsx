@@ -4,8 +4,10 @@ import Content from 'components/Content';
 import DocumentProvider from 'context/document/DocumentProvider';
 import { DocumentProps } from 'model';
 
+type ScreenNode = Exclude<React.ReactNode, null | undefined>;
+
 export type StaticDocumentProps = DocumentProps & {
-  screen: Exclude<React.ReactNode, null | undefined> | ((isPrinting: boolean) => React.ReactNode);
+  screen: ScreenNode | ((isPrinting: boolean) => ScreenNode);
 };
 
 const StaticDocument = ({

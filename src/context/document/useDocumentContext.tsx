@@ -6,7 +6,7 @@ const useDocumentContext = (nullable?: boolean): DocumentContextValue => {
   const context = useContext<DocumentContextValue | null>(DocumentContext);
 
   if (!context && !nullable) {
-    throw new Error();
+    throw new Error('DocumentContext can only be executed under DocumentProvider');
   }
 
   return context as DocumentContextValue;

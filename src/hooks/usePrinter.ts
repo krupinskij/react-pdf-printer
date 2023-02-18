@@ -1,24 +1,30 @@
+import { useCallback } from 'react';
+
 import useDocumentContext from 'context/document/useDocumentContext';
-import usePrinterContext from 'context/printer/usePrinterContext';
 
 type UsePrinterResult = {
-  isPrinting: boolean;
-  isPrinted: boolean;
-  print: () => void;
+  isPrinter: boolean;
+  subscribe: () => void;
+  run: () => void;
 };
 
-const usePrinter = (): UsePrinterResult => {
-  const printerContext = usePrinterContext();
+const usePrinter = (key?: string): UsePrinterResult => {
   const documentContext = useDocumentContext(true);
 
-  const { print } = printerContext;
-  const { isPending } = documentContext;
+  if (!documentContext || !key) {
+    return {
+      isPrinter: !!documentContext,
+      subscribe: useCallback(() => {}, []),
+      run: useCallback(() => {}, []),
+    };
+  }
 
-  return {
-    isPrinting: isPending,
-    isPrinted: !!documentContext,
-    print,
-  };
+  const { subscribe, run } = documentContext;
+
+  const subscribeCallback = useCallback(() => subscribe(key), [subscribe, key]);
+  const runCallback = useCallback(() => run(key), [run, key]);
+
+  return { isPrinter: true, subscribe: subscribeCallback, run: runCallback };
 };
 
 export default usePrinter;
