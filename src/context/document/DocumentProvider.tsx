@@ -2,12 +2,13 @@ import React, { useCallback, useEffect, useReducer, useState } from 'react';
 
 import usePrinterContext from 'context/printer/usePrinterContext';
 import { DocumentConfiguration } from 'model';
+import { DeepPartial } from 'utilities/helperTypes';
 import { merge } from 'utilities/helpers';
 
 import DocumentContext from './DocumentContext';
 
 export type DocumentProviderProps = {
-  configuration?: DocumentConfiguration;
+  configuration?: DeepPartial<DocumentConfiguration>;
   header: React.ReactNode;
   footer: React.ReactNode;
   children: React.ReactNode;
@@ -60,11 +61,13 @@ const DocumentProvider = ({ configuration = {}, children, ...props }: DocumentPr
     }
   }, [asyncState, useAsync]);
 
-  <DocumentContext.Provider
-    value={{ configuration: globalConfiguration, subscribe, run, reset, isPending, ...props }}
-  >
-    {children}
-  </DocumentContext.Provider>;
+  return (
+    <DocumentContext.Provider
+      value={{ configuration: globalConfiguration, subscribe, run, reset, isPending, ...props }}
+    >
+      {children}
+    </DocumentContext.Provider>
+  );
 };
 
 export default DocumentProvider;

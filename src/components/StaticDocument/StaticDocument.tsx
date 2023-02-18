@@ -1,11 +1,14 @@
-import React, { ReactNode, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import Content from 'components/Content';
-import DocumentProvider from 'context/document2/DocumentProvider';
-import PrinterProvider from 'context/printer2/PrinterProvider';
-import { StaticDocumentProps } from 'model';
+import DocumentProvider from 'context/document/DocumentProvider';
+import { DocumentProps } from 'model';
 
-const Document = ({
+export type StaticDocumentProps = DocumentProps & {
+  screen: Exclude<React.ReactNode, null | undefined> | ((isPrinting: boolean) => React.ReactNode);
+};
+
+const StaticDocument = ({
   header,
   footer,
   children,
@@ -14,7 +17,6 @@ const Document = ({
   onPrint = window.print,
 }: StaticDocumentProps) => {
   const [isPrinting, setIsPrinting] = useState(true);
-  const { useAsync = false } = configuration || {};
 
   const handlePrint = useCallback(() => {
     setIsPrinting(false);
@@ -22,16 +24,13 @@ const Document = ({
   }, [onPrint, setIsPrinting]);
 
   const screenChild = typeof screen === 'function' ? screen(isPrinting) : screen;
+
   return (
-    <DocumentProvider header={header} footer={footer}>
-      <PrinterProvider isAsync={useAsync}>
-        <Content configuration={configuration} printOnly={!!screen} onPrint={handlePrint}>
-          {children}
-        </Content>
-        <div data-printer-screenonly="true">{screenChild}</div>
-      </PrinterProvider>
+    <DocumentProvider header={header} footer={footer} configuration={configuration}>
+      <Content onPrint={handlePrint}>{children}</Content>
+      <div data-printer-screenonly="true">{screenChild}</div>
     </DocumentProvider>
   );
 };
 
-export default Document;
+export default StaticDocument;

@@ -17,17 +17,16 @@ export type PageSize =
   | 'ledger';
 
 export type Pagination = {
-  format?: string;
-  formatPage?: string;
-  formatCount?: string;
-  style?: string;
+  format: string;
+  formatPage: string;
+  formatCount: string;
 };
 
 export type PrinterConfiguration = {
-  orientation?: Orientation;
-  size?: Size;
-  pagination?: Pagination;
-  useAsync?: boolean;
+  orientation: Orientation;
+  size: Size;
+  pagination: Pagination;
+  useAsync: boolean;
 };
 
 export type DocumentConfiguration = Omit<PrinterConfiguration, 'orientation' | 'size'>;
@@ -39,10 +38,6 @@ export type DocumentProps = {
   onPrint?: () => void;
   title?: string;
   children: React.ReactNode;
-};
-
-export type StaticDocumentProps = DocumentProps & {
-  screen: Exclude<React.ReactNode, null | undefined> | ((isPrinting: boolean) => React.ReactNode);
 };
 
 export type PageProps = {

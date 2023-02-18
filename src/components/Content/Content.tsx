@@ -1,14 +1,11 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import PrinterContext, { PrinterContextValue } from 'context/printer2/PrinterContext';
+import useDocumentContext from 'context/document/useDocumentContext';
 import usePageDimensions from 'hooks/usePageDimensions';
-import { DocumentConfiguration } from 'model';
 import { getBoundary } from 'utilities/getBoundary';
 
 type Props = {
   children: React.ReactNode;
-  configuration?: DocumentConfiguration;
-  printOnly: boolean;
   onPrint: () => void;
 };
 
@@ -18,15 +15,15 @@ type DivisibleElement = {
   bottomChild: HTMLElement;
 };
 
-const Content = ({ children, configuration, printOnly, onPrint }: Props) => {
-  const { pagination = {} } = configuration || {};
+const Content = ({ children, onPrint }: Props) => {
+  const { configuration, isPending } = useDocumentContext();
+  const { pagination, orientation, size } = configuration;
 
   const documentRef = useRef<HTMLDivElement>(null);
-  const { isLoading } = useContext<PrinterContextValue | null>(PrinterContext)!;
   const { height, width } = usePageDimensions(size, orientation);
 
   useEffect(() => {
-    if (isLoading || !documentRef.current) return;
+    if (isPending || !documentRef.current) return;
 
     const articles = documentRef.current.querySelectorAll<HTMLElement>(
       '[data-printer-type="page"], [data-printer-type="view"]'
@@ -213,7 +210,7 @@ const Content = ({ children, configuration, printOnly, onPrint }: Props) => {
         .replaceAll(formatCount, String(pagesCount + 1))}'`
     );
 
-    onLoaded();
+    onPrint();
 
     return () => {
       const brokens =
@@ -236,13 +233,13 @@ const Content = ({ children, configuration, printOnly, onPrint }: Props) => {
         elem.remove();
       });
     };
-  }, [isLoading, height, pagination, onLoaded]);
+  }, [isPending, height, pagination, onPrint]);
   return (
     <div
       ref={documentRef}
       style={{ width: Math.floor(width) }}
       data-printer-type="document"
-      data-printer-printonly={printOnly}
+      data-printer-printonly={true}
     >
       {children}
     </div>

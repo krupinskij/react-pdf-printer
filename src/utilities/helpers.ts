@@ -1,10 +1,4 @@
-type Merge<T1 extends { [key: PropertyKey]: any }, T2 extends { [key: PropertyKey]: any }> = {
-  [K in keyof T1 | keyof T2]: K extends keyof T2
-    ? T2[K] extends { [key: PropertyKey]: any }
-      ? Merge<T1[K], T2[K]>
-      : T2[K]
-    : T1[K];
-};
+import { Merge } from './helperTypes';
 
 export const merge = <
   T1 extends { [key: PropertyKey]: any },
