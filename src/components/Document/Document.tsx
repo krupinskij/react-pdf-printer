@@ -1,21 +1,49 @@
-import React, { useCallback, useImperativeHandle } from 'react';
+import React, { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
 
 import Content from 'components/Document/Content';
 import DocumentProvider from 'context/document/DocumentProvider';
 import usePrinterContext from 'context/printer/usePrinterContext';
-import { DocumentProps as Prop } from 'model';
+import { DocumentConfiguration } from 'model';
+import { DeepPartial } from 'utilities/helperTypes';
 
-export type DocumentProps = Prop;
-
+export type DocumentProps = {
+  configuration?: DeepPartial<DocumentConfiguration>;
+  header: React.ReactNode;
+  footer: React.ReactNode;
+  onRender?: () => void;
+  children: React.ReactNode;
+  container?: HTMLElement;
+};
 export type DocumentRef = {
   render: () => void;
 };
 
 const Document = (
-  { header, footer, children, configuration, onRender = window.print }: DocumentProps,
+  { header, footer, children, configuration, container, onRender = window.print }: DocumentProps,
   ref: React.Ref<DocumentRef>
 ) => {
   const { isRendering, setRendering } = usePrinterContext();
+
+  const [portalContainer, setPortalContainer] = useState<HTMLElement>();
+  useEffect(() => {
+    let portalContainer: HTMLElement;
+    if (container) {
+      portalContainer = container;
+    } else {
+      portalContainer = document.createElement('div');
+      document.body.appendChild(portalContainer);
+    }
+    portalContainer.dataset.printerType = 'portal';
+
+    setPortalContainer(portalContainer);
+
+    return () => {
+      if (!container) {
+        document.body.removeChild(portalContainer);
+      }
+    };
+  }, [container]);
 
   const handleRender = useCallback(() => {
     setRendering(false);
@@ -30,12 +58,15 @@ const Document = (
     [setRendering]
   );
 
-  return (
+  if (!portalContainer) return null;
+
+  return ReactDOM.createPortal(
     <DocumentProvider header={header} footer={footer} configuration={configuration}>
       <Content onRender={handleRender} isRendering={isRendering}>
         {children}
       </Content>
-    </DocumentProvider>
+    </DocumentProvider>,
+    portalContainer
   );
 };
 

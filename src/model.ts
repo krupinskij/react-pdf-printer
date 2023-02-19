@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { DeepPartial } from 'utilities/helperTypes';
-
 export type Orientation = 'landscape' | 'portrait';
 
 export type Size = number | [number, number] | PageSize;
@@ -32,14 +30,6 @@ export type PrinterConfiguration = {
 };
 
 export type DocumentConfiguration = Omit<PrinterConfiguration, 'orientation' | 'size'>;
-
-export type DocumentProps = {
-  configuration?: DeepPartial<DocumentConfiguration>;
-  header: React.ReactNode;
-  footer: React.ReactNode;
-  onRender?: () => void;
-  children: React.ReactNode;
-};
 
 export type PageProps = {
   header?: React.ReactNode;

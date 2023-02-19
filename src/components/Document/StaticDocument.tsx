@@ -3,15 +3,15 @@ import React, { useState, useCallback, useEffect, useImperativeHandle } from 're
 import Content from 'components/Document/Content';
 import DocumentProvider from 'context/document/DocumentProvider';
 import usePrinterContext from 'context/printer/usePrinterContext';
-import { DocumentProps } from 'model';
 
-import { DocumentRef } from './Document';
+import { DocumentProps, DocumentRef } from './Document';
 
 type ScreenNode = Exclude<React.ReactNode, null | undefined>;
 
-export type StaticDocumentProps = DocumentProps & {
+export type StaticDocumentProps = Omit<DocumentProps, 'container'> & {
   renderOnInit?: boolean;
   screen: ScreenNode | ((isPrinting: boolean) => ScreenNode);
+  aaa?: string;
 };
 
 const StaticDocument = (

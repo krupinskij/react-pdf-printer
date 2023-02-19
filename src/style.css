@@ -63,3 +63,9 @@ body {
     height: 0;
   }
 }
+
+@media print {
+  body:has(> [data-printer-type='portal']) > :not([data-printer-type='portal']) {
+    display: none;
+  }
+}
