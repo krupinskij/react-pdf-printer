@@ -10,10 +10,10 @@
   }
 }
 
-body {
+/* body {
   margin: 0;
   overflow: hidden;
-}
+} */
 
 [data-printer-type='document'] {
   --pagination-content: '';
@@ -38,6 +38,11 @@ body {
   position: absolute;
   left: 0;
   right: 0;
+  z-index: 1;
+}
+
+[data-printer-section='main'] {
+  z-index: 0;
 }
 
 [data-printer-section='header'] {

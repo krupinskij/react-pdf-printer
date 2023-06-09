@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import ReactDOM from 'react-dom';
 
-import Content from 'components/Document/Content';
 import DocumentProvider from 'context/document/DocumentProvider';
 import usePrinterContext from 'context/printer/usePrinterContext';
 import { DocumentConfiguration } from 'model';
 import { DeepPartial } from 'utilities/helperTypes';
+
+import Content from './Content';
 
 export type DocumentProps = {
   configuration?: DeepPartial<DocumentConfiguration>;
@@ -53,7 +54,9 @@ const Document = (
   useImperativeHandle(
     ref,
     () => ({
-      render: () => setRendering(true),
+      render: () => {
+        setTimeout(() => setRendering(true), 0);
+      },
     }),
     [setRendering]
   );

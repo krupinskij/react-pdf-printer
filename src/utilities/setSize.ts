@@ -9,7 +9,7 @@ export const setSize = (size: string) => {
 const findCssRule = (cssRules: CSSRuleList, size: string) => {
   for (let i = 0; i < cssRules.length; i++) {
     const cssRule = cssRules[i] as any;
-    if (!cssRule.cssRules) {
+    if (!cssRule.cssRules && cssRule.style) {
       cssRule.style.size = size;
       return;
     }

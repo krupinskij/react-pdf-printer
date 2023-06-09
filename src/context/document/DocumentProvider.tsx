@@ -28,7 +28,9 @@ const reducer = (state: Record<string, boolean>, { key, type }: ReducerAction) =
       return { ...state, [key]: true };
 
     case 'reset':
-      return {};
+      const newState = { ...state };
+      delete newState[key];
+      return newState;
   }
 };
 

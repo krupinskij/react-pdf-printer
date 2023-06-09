@@ -1,9 +1,9 @@
-import React, { useState, useCallback, useEffect, useImperativeHandle } from 'react';
+import React, { useCallback, useEffect, useImperativeHandle } from 'react';
 
-import Content from 'components/Document/Content';
 import DocumentProvider from 'context/document/DocumentProvider';
 import usePrinterContext from 'context/printer/usePrinterContext';
 
+import Content from './Content';
 import { DocumentProps, DocumentRef } from './Document';
 
 type ScreenNode = Exclude<React.ReactNode, null | undefined>;
@@ -11,7 +11,6 @@ type ScreenNode = Exclude<React.ReactNode, null | undefined>;
 export type StaticDocumentProps = Omit<DocumentProps, 'container'> & {
   renderOnInit?: boolean;
   screen: ScreenNode | ((isPrinting: boolean) => ScreenNode);
-  aaa?: string;
 };
 
 const StaticDocument = (
@@ -40,7 +39,9 @@ const StaticDocument = (
   useImperativeHandle(
     ref,
     () => ({
-      render: () => setRendering(true),
+      render: () => {
+        setRendering(true);
+      },
     }),
     [setRendering]
   );

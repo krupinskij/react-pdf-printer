@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import useDocumentContext from 'context/document/useDocumentContext';
 import usePrinterContext from 'context/printer/usePrinterContext';
@@ -23,10 +23,19 @@ const usePrinter = (key?: string): UsePrinterResult => {
     };
   }
 
-  const { subscribe, run } = documentContext;
+  const { subscribe, run, reset, isPending } = documentContext;
 
   const subscribeCallback = useCallback(() => subscribe(key), [subscribe, key]);
-  const runCallback = useCallback(() => run(key), [run, key]);
+  const runCallback = useCallback(() => {
+    setTimeout(() => run(key), 0);
+  }, [run, key]);
+
+  useEffect(
+    () => () => {
+      reset(key);
+    },
+    [key, isPending]
+  );
 
   return {
     isPrinter: true,
