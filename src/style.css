@@ -1,11 +1,7 @@
 @media print {
-  @page {
-    margin: 0;
-    size: a4;
-  }
-
   * {
     color-adjust: exact;
+    print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
 }
