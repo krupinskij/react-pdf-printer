@@ -17,7 +17,8 @@ body:has([data-printer-type='static-document']) {
   }
 }
 
-[data-printer-type='document'] {
+[data-printer-type='static-document'],
+[data-printer-type='portal-document'] {
   --pagination-content: '';
   counter-reset: printer-page;
 }
