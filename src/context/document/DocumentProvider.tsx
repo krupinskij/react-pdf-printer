@@ -50,6 +50,7 @@ const DocumentProvider = ({ configuration = {}, children, ...props }: DocumentPr
     dispatch({ key, type: 'run' });
   }, []);
   const reset = useCallback((key: string) => {
+    setIsPending(true);
     dispatch({ key, type: 'reset' });
   }, []);
 

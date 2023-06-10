@@ -23,7 +23,7 @@ const usePrinter = (key?: string): UsePrinterResult => {
     };
   }
 
-  const { subscribe, run, reset, isPending } = documentContext;
+  const { subscribe, run, reset } = documentContext;
 
   const subscribeCallback = useCallback(() => subscribe(key), [subscribe, key]);
   const runCallback = useCallback(() => {
@@ -34,7 +34,7 @@ const usePrinter = (key?: string): UsePrinterResult => {
     () => () => {
       reset(key);
     },
-    [key, isPending]
+    [reset, key]
   );
 
   return {
