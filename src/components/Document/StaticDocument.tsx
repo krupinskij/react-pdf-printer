@@ -50,7 +50,7 @@ const StaticDocument = (
 
   return (
     <DocumentProvider header={header} footer={footer} configuration={configuration}>
-      <Content onRender={handleRender} isRendering={isRendering}>
+      <Content documentType="static" onRender={handleRender} isRendering={isRendering}>
         {children}
       </Content>
       <div data-printer-screenonly="true">{screenChild}</div>

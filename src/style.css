@@ -6,10 +6,16 @@
   }
 }
 
-/* body {
+body:has([data-printer-type='static-document']) {
   margin: 0;
   overflow: hidden;
-} */
+}
+
+@media screen {
+  [data-printer-type='portal-document'] {
+    position: absolute;
+  }
+}
 
 [data-printer-type='document'] {
   --pagination-content: '';

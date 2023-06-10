@@ -5,6 +5,7 @@ import usePageDimensions from 'hooks/usePageDimensions';
 import { getBoundary } from 'utilities/getBoundary';
 
 type Props = {
+  documentType: 'static' | 'portal';
   children: React.ReactNode;
   isRendering: boolean;
   onRender: () => void;
@@ -16,7 +17,7 @@ type DivisibleElement = {
   bottomChild: HTMLElement;
 };
 
-const Content = ({ children, isRendering, onRender }: Props) => {
+const Content = ({ documentType, children, isRendering, onRender }: Props) => {
   const { configuration, isPending } = useDocumentContext();
   const { pagination, orientation, size } = configuration;
 
@@ -249,7 +250,7 @@ const Content = ({ children, isRendering, onRender }: Props) => {
     <div
       ref={documentRef}
       style={{ width: Math.floor(width) }}
-      data-printer-type="document"
+      data-printer-type={`${documentType}-document`}
       data-printer-printonly={true}
     >
       {children}
