@@ -45,13 +45,12 @@ export default [
   },
   {
     input: 'src/style.css',
-    output: [{ dir: 'dist/esm/types' }],
+    output: [{ dir: 'dist' }],
     plugins: [postcss({ extract: 'style.css' })],
   },
   {
     input: 'dist/esm/types/index.d.ts',
     output: [{ file: 'dist/index.d.ts', format: 'esm' }],
-    external: [/\/.css$/u],
     plugins: [
       resolveNonExternals({
         dir: 'dist/esm/types',
@@ -59,7 +58,6 @@ export default [
         nonExternals: ['components', 'context', 'hooks', 'utilities', 'model'],
       }),
       dts(),
-      postcss(),
     ],
   },
 ];
