@@ -6,19 +6,25 @@ import usePrinterContext from 'context/printer/usePrinterContext';
 import Content from './Content';
 import { DocumentProps, DocumentRef } from './Document';
 
-type ScreenNode = Exclude<React.ReactNode, null | undefined>;
+type ScreenProps = {
+  isPrinting: boolean;
+};
+
+type ScreenElement = React.ReactElement<ScreenProps, React.JSXElementConstructor<any>>;
 
 export type StaticDocumentProps = Omit<DocumentProps, 'container'> & {
+  title?: string;
   renderOnInit?: boolean;
-  screen: ScreenNode | ((isPrinting: boolean) => ScreenNode);
+  screen: ScreenElement | ((screenProps: ScreenProps) => ScreenElement);
 };
 
 const StaticDocument = (
   {
+    title,
     header,
     footer,
     children,
-    screen,
+    screen: Screen,
     configuration,
     renderOnInit = true,
     onRender = window.print,
@@ -30,6 +36,16 @@ const StaticDocument = (
   useEffect(() => {
     setRendering(renderOnInit);
   }, [setRendering, renderOnInit]);
+
+  useEffect(() => {
+    if (!title) return;
+    const originalTitle = document.title;
+    document.title = title;
+
+    return () => {
+      document.title = originalTitle;
+    };
+  }, [title]);
 
   const handleRender = useCallback(() => {
     setRendering(false);
@@ -46,14 +62,14 @@ const StaticDocument = (
     [setRendering]
   );
 
-  const screenChild = typeof screen === 'function' ? screen(isRendering) : screen;
-
   return (
     <DocumentProvider header={header} footer={footer} configuration={configuration}>
       <Content documentType="static" onRender={handleRender} isRendering={isRendering}>
         {children}
       </Content>
-      <div data-printer-screenonly="true">{screenChild}</div>
+      <div data-printer-screenonly="true">
+        {React.isValidElement(Screen) ? Screen : <Screen isPrinting={isRendering} />}
+      </div>
     </DocumentProvider>
   );
 };
