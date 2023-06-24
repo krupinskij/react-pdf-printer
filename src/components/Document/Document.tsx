@@ -1,50 +1,39 @@
-import React, { useCallback, useEffect, useImperativeHandle, useState } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useCallback, useEffect, useImperativeHandle } from 'react';
 
 import DocumentProvider from 'context/document/DocumentProvider';
 import usePrinterContext from 'context/printer/usePrinterContext';
-import { DocumentConfiguration } from 'model';
-import { DeepPartial } from 'utilities/helperTypes';
 
 import Content from './Content';
-
-export type DocumentProps = {
-  configuration?: DeepPartial<DocumentConfiguration>;
-  header: React.ReactNode;
-  footer: React.ReactNode;
-  onRender?: () => void;
-  children: React.ReactNode;
-  container?: HTMLElement;
-};
-export type DocumentRef = {
-  render: () => void;
-};
+import { DocumentProps, DocumentRef } from './model';
 
 const Document = (
-  { header, footer, children, configuration, container, onRender = window.print }: DocumentProps,
+  {
+    title,
+    header,
+    footer,
+    children,
+    screen: Screen,
+    configuration,
+    renderOnInit = true,
+    onRender = window.print,
+  }: DocumentProps,
   ref: React.Ref<DocumentRef>
 ) => {
   const { isRendering, setRendering } = usePrinterContext();
 
-  const [portalContainer, setPortalContainer] = useState<HTMLElement>();
   useEffect(() => {
-    let portalContainer: HTMLElement;
-    if (container) {
-      portalContainer = container;
-    } else {
-      portalContainer = document.createElement('div');
-      document.body.appendChild(portalContainer);
-    }
-    portalContainer.dataset.printerType = 'portal';
+    setRendering(renderOnInit);
+  }, [setRendering, renderOnInit]);
 
-    setPortalContainer(portalContainer);
+  useEffect(() => {
+    if (!title) return;
+    const originalTitle = document.title;
+    document.title = title;
 
     return () => {
-      if (!container) {
-        document.body.removeChild(portalContainer);
-      }
+      document.title = originalTitle;
     };
-  }, [container]);
+  }, [title]);
 
   const handleRender = useCallback(() => {
     setRendering(false);
@@ -55,21 +44,21 @@ const Document = (
     ref,
     () => ({
       render: () => {
-        setTimeout(() => setRendering(true), 0);
+        setRendering(true);
       },
     }),
     [setRendering]
   );
 
-  if (!portalContainer) return null;
-
-  return ReactDOM.createPortal(
+  return (
     <DocumentProvider header={header} footer={footer} configuration={configuration}>
-      <Content documentType="portal" onRender={handleRender} isRendering={isRendering}>
+      <Content documentType="static" onRender={handleRender} isRendering={isRendering}>
         {children}
       </Content>
-    </DocumentProvider>,
-    portalContainer
+      <div data-printer-screenonly="true">
+        {React.isValidElement(Screen) ? Screen : <Screen isRendering={isRendering} />}
+      </div>
+    </DocumentProvider>
   );
 };
 
