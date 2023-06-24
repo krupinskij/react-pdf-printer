@@ -19,7 +19,8 @@ export type PageSize =
 export type Pagination = {
   format: string;
   formatPage: string;
-  formatCount: string;
+  formatTotal: string;
+  style: string;
 };
 
 export type PrinterConfiguration = {

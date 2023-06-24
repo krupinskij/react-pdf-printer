@@ -20,7 +20,7 @@ body:has([data-printer-type='static-document']) {
 [data-printer-type='static-document'],
 [data-printer-type='portal-document'] {
   --pagination-content: '';
-  counter-reset: printer-page;
+  counter-reset: printer-pagination-page printer-pagination-total var(--printer-pagination-total);
 }
 
 [data-printer-article='page'] {
@@ -49,11 +49,11 @@ body:has([data-printer-type='static-document']) {
 }
 
 [data-printer-section='header'] {
-  counter-increment: printer-page;
+  counter-increment: printer-pagination-page;
 }
 
 [data-printer-component='pagination']::before {
-  content: var(--pagination-content);
+  content: var(--printer-pagination-content);
 }
 
 @media print {

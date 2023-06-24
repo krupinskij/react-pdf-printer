@@ -210,13 +210,14 @@ const Content = ({ documentType, children, isRendering, onRender }: Props) => {
       });
     });
 
-    const { format = '#p / #c', formatPage = '#p', formatCount = '#c' } = pagination;
+    const { format, formatPage, formatTotal, style } = pagination;
 
+    documentRef.current.style.setProperty('--printer-pagination-total', `${pagesCount + 1}`);
     documentRef.current.style.setProperty(
-      '--pagination-content',
+      '--printer-pagination-content',
       `'${format
-        .replaceAll(formatPage, "'counter(printer-page)'")
-        .replaceAll(formatCount, String(pagesCount + 1))}'`
+        .replaceAll(formatPage, `'counter(printer-pagination-page, ${style})'`)
+        .replaceAll(formatTotal, `'counter(printer-pagination-total, ${style})'`)}'`
     );
 
     wasRendered.current = true;
