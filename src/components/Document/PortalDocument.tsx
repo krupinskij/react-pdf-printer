@@ -8,37 +8,23 @@ import Content from './Content';
 import { PortalDocumentProps, DocumentRef } from './model';
 
 const PortalDocument = (
-  {
-    header,
-    footer,
-    children,
-    configuration,
-    container,
-    onRender = window.print,
-  }: PortalDocumentProps,
+  { header, footer, children, configuration, onRender = window.print }: PortalDocumentProps,
   ref: React.Ref<DocumentRef>
 ) => {
   const { isRendering, setRendering } = usePrinterContext();
 
-  const [portalContainer, setPortalContainer] = useState<HTMLElement>();
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
   useEffect(() => {
-    let portalContainer: HTMLElement;
-    if (container) {
-      portalContainer = container;
-    } else {
-      portalContainer = document.createElement('div');
-      document.body.appendChild(portalContainer);
-    }
+    const portalContainer = document.createElement('div');
+    document.body.appendChild(portalContainer);
     portalContainer.dataset.printerType = 'portal';
 
     setPortalContainer(portalContainer);
 
     return () => {
-      if (!container) {
-        document.body.removeChild(portalContainer);
-      }
+      document.body.removeChild(portalContainer);
     };
-  }, [container]);
+  }, []);
 
   const handleRender = useCallback(() => {
     setRendering(false);

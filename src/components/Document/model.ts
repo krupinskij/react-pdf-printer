@@ -18,7 +18,6 @@ export type PortalDocumentProps = {
   footer: React.ReactNode;
   onRender?: () => void;
   children: React.ReactNode;
-  container?: HTMLElement;
 };
 
 export type DocumentRef = {
@@ -31,7 +30,7 @@ type ScreenProps = {
 
 type ScreenElement = React.ReactElement<ScreenProps, React.JSXElementConstructor<any>>;
 
-export type DocumentProps = Omit<PortalDocumentProps, 'container'> & {
+export type DocumentProps = PortalDocumentProps & {
   title?: string;
   renderOnInit?: boolean;
   screen: ScreenElement | ((screenProps: ScreenProps) => ScreenElement);

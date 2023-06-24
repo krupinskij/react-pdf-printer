@@ -15,7 +15,7 @@ const defaultConfiguration: PrinterConfiguration = {
   useAsync: false,
   size: 'a4',
   orientation: 'portrait',
-  pagination: { format: '#p / #c', formatPage: '#p', formatTotal: '#t', style: 'decimal' },
+  pagination: { format: '#p / #t', formatPage: '#p', formatTotal: '#t', style: 'decimal' },
 };
 
 const PrinterProvider = ({ configuration = {}, children }: PrinterProviderProps) => {
