@@ -1,7 +1,6 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { Orientation, PageSize, Size } from 'model';
-import { setSize } from 'utilities/setSize';
 
 const sizeMap: Record<PageSize, { width: number; height: number }> = {
   a3: { width: 1122.519685, height: 1587.4015748 },
@@ -22,33 +21,49 @@ type DimensionType = {
 };
 
 const usePageDimensions = (size: Size, orientation: Orientation): DimensionType => {
-  const dimensions = useMemo(() => {
+  const { height, width, sizeValue } = useMemo(() => {
     let width = 0;
     let height = 0;
-    let sizeCSSValue = '';
+    let sizeValue = '';
     if (typeof size === 'number') {
       width = height = size;
-      sizeCSSValue = String(size);
+      sizeValue = String(size);
     } else if (Array.isArray(size)) {
       [width, height] = size;
-      sizeCSSValue = `${width} ${height}`;
+      sizeValue = `${width} ${height}`;
     } else {
       const dimensions = sizeMap[size];
       width = dimensions.width;
       height = dimensions.height;
-      sizeCSSValue = size;
+      sizeValue = size;
     }
 
     if (orientation === 'landscape') {
       [width, height] = [height, width];
     }
 
-    sizeCSSValue += ' ' + orientation;
-    setSize(sizeCSSValue);
-    return { width, height };
+    return { width, height, sizeValue };
   }, [size, orientation]);
 
-  return dimensions;
+  useEffect(() => {
+    const style = document.createElement('style');
+    const css = `
+      @media print {
+        @page {
+          margin: 0;
+          size: ${sizeValue} ${orientation};
+        }
+      }
+    `;
+    style.appendChild(document.createTextNode(css));
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, [orientation, sizeValue]);
+
+  return { width, height };
 };
 
 export default usePageDimensions;

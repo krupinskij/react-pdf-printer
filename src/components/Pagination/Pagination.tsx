@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { ComponentProps } from 'react';
 
-const Pagination: React.FC = () => <span data-printer-component="pagination" />;
+type Props = ComponentProps<'span'>;
+
+const Pagination: React.FC = (props: Props) => (
+  <span {...props} data-printer-component="pagination" />
+);
 
 export default Pagination;

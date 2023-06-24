@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { PrinterConfiguration } from 'model';
 import { DeepPartial } from 'utilities/helperTypes';
@@ -15,13 +15,16 @@ const defaultConfiguration: PrinterConfiguration = {
   useAsync: false,
   size: 'a4',
   orientation: 'portrait',
-  pagination: { format: '#p / #c', formatPage: '#p', formatCount: '#c' },
+  pagination: { format: '#p / #c', formatPage: '#p', formatTotal: '#t', style: 'decimal' },
 };
 
 const PrinterProvider = ({ configuration = {}, children }: PrinterProviderProps) => {
   const globalConfiguration = merge(defaultConfiguration, configuration);
+  const [isRendering, setRendering] = useState(false);
   return (
-    <PrinterContext.Provider value={{ configuration: globalConfiguration }}>
+    <PrinterContext.Provider
+      value={{ configuration: globalConfiguration, isRendering, setRendering }}
+    >
       {children}
     </PrinterContext.Provider>
   );

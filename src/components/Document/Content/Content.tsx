@@ -5,8 +5,10 @@ import usePageDimensions from 'hooks/usePageDimensions';
 import { getBoundary } from 'utilities/getBoundary';
 
 type Props = {
+  documentType: 'static' | 'portal';
   children: React.ReactNode;
-  onPrint: () => void;
+  isRendering: boolean;
+  onRender: () => void;
 };
 
 type DivisibleElement = {
@@ -15,15 +17,22 @@ type DivisibleElement = {
   bottomChild: HTMLElement;
 };
 
-const Content = ({ children, onPrint }: Props) => {
+const Content = ({ documentType, children, isRendering, onRender }: Props) => {
   const { configuration, isPending } = useDocumentContext();
   const { pagination, orientation, size } = configuration;
 
   const documentRef = useRef<HTMLDivElement>(null);
   const { height, width } = usePageDimensions(size, orientation);
 
+  const wasRendered = useRef(false);
+
   useEffect(() => {
-    if (isPending || !documentRef.current) return;
+    if (isPending || !isRendering || !documentRef.current) return;
+
+    if (wasRendered.current) {
+      onRender();
+      return;
+    }
 
     const articles = documentRef.current.querySelectorAll<HTMLElement>(
       '[data-printer-article="page"], [data-printer-article="pages"]'
@@ -201,16 +210,18 @@ const Content = ({ children, onPrint }: Props) => {
       });
     });
 
-    const { format = '#p / #c', formatPage = '#p', formatCount = '#c' } = pagination;
+    const { format, formatPage, formatTotal, style } = pagination;
 
+    documentRef.current.style.setProperty('--printer-pagination-total', `${pagesCount + 1}`);
     documentRef.current.style.setProperty(
-      '--pagination-content',
+      '--printer-pagination-content',
       `'${format
-        .replaceAll(formatPage, "'counter(printer-page)'")
-        .replaceAll(formatCount, String(pagesCount + 1))}'`
+        .replaceAll(formatPage, `'counter(printer-pagination-page, ${style})'`)
+        .replaceAll(formatTotal, `'counter(printer-pagination-total, ${style})'`)}'`
     );
 
-    onPrint();
+    wasRendered.current = true;
+    onRender();
 
     return () => {
       const brokens =
@@ -232,13 +243,15 @@ const Content = ({ children, onPrint }: Props) => {
       clones.forEach((elem) => {
         elem.remove();
       });
+
+      wasRendered.current = false;
     };
-  }, [isPending, height, pagination, onPrint]);
+  }, [isPending, isRendering, height, pagination, onRender]);
   return (
     <div
       ref={documentRef}
       style={{ width: Math.floor(width) }}
-      data-printer-type="document"
+      data-printer-type={`${documentType}-document`}
       data-printer-printonly={true}
     >
       {children}
