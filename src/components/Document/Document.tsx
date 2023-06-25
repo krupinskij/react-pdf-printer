@@ -1,40 +1,65 @@
-import React, { ReactNode, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useImperativeHandle } from 'react';
 
 import DocumentProvider from 'context/document/DocumentProvider';
-import PrinterProvider from 'context/printer/PrinterProvider';
+import usePrinterContext from 'context/printer/usePrinterContext';
 
-import Content from './components/Content';
-import { DocumentConfiguration } from './model';
+import Content from './Content';
+import { DocumentProps, DocumentRef } from './model';
 
-type DocumentProps = {
-  header: ReactNode;
-  footer: ReactNode;
-  children: ReactNode;
-  screen?: ReactNode | ((isLoading: boolean) => ReactNode);
-  configuration?: DocumentConfiguration;
-  onLoaded?: () => void;
-};
+const Document = (
+  {
+    title,
+    header,
+    footer,
+    children,
+    screen: Screen,
+    configuration,
+    renderOnInit = true,
+    onRender = window.print,
+  }: DocumentProps,
+  ref: React.Ref<DocumentRef>
+) => {
+  const { isRendering, setRendering } = usePrinterContext();
 
-const Document = ({ header, footer, children, screen, configuration, onLoaded }: DocumentProps) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const { isAsync = false } = configuration || {};
+  useEffect(() => {
+    setRendering(renderOnInit);
+  }, [setRendering, renderOnInit]);
 
-  const handleLoaded = useCallback(() => {
-    setIsLoading(false);
-    setTimeout(() => onLoaded?.(), 0);
-  }, [onLoaded, setIsLoading]);
+  useEffect(() => {
+    if (!title) return;
+    const originalTitle = document.title;
+    document.title = title;
 
-  const screenChild = typeof screen === 'function' ? screen(isLoading) : screen;
+    return () => {
+      document.title = originalTitle;
+    };
+  }, [title]);
+
+  const handleRender = useCallback(() => {
+    setRendering(false);
+    setTimeout(() => onRender(), 0);
+  }, [onRender, setRendering]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      render: () => {
+        setRendering(true);
+      },
+    }),
+    [setRendering]
+  );
+
   return (
-    <DocumentProvider header={header} footer={footer}>
-      <PrinterProvider isAsync={isAsync}>
-        <Content configuration={configuration} printOnly={!!screen} onLoaded={handleLoaded}>
-          {children}
-        </Content>
-        <div data-printer-screenonly="true">{screenChild}</div>
-      </PrinterProvider>
+    <DocumentProvider header={header} footer={footer} configuration={configuration}>
+      <Content documentType="static" onRender={handleRender} isRendering={isRendering}>
+        {children}
+      </Content>
+      <div data-printer-screenonly="true">
+        {React.isValidElement(Screen) ? Screen : <Screen isRendering={isRendering} />}
+      </div>
     </DocumentProvider>
   );
 };
 
-export default Document;
+export default React.forwardRef(Document);

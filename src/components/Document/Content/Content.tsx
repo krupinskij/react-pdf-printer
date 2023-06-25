@@ -1,16 +1,14 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import PrinterContext, { PrinterContextValue } from 'context/printer/PrinterContext';
+import useDocumentContext from 'context/document/useDocumentContext';
 import usePageDimensions from 'hooks/usePageDimensions';
 import { getBoundary } from 'utilities/getBoundary';
 
-import { DocumentConfiguration } from '../model';
-
 type Props = {
+  documentType: 'static' | 'portal';
   children: React.ReactNode;
-  configuration?: DocumentConfiguration;
-  printOnly: boolean;
-  onLoaded: () => void;
+  isRendering: boolean;
+  onRender: () => void;
 };
 
 type DivisibleElement = {
@@ -19,24 +17,31 @@ type DivisibleElement = {
   bottomChild: HTMLElement;
 };
 
-const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
-  const { size = 'a4', orientation = 'portrait', pagination = {} } = configuration || {};
+const Content = ({ documentType, children, isRendering, onRender }: Props) => {
+  const { configuration, isPending } = useDocumentContext();
+  const { pagination, orientation, size } = configuration;
 
   const documentRef = useRef<HTMLDivElement>(null);
-  const { isLoading } = useContext<PrinterContextValue | null>(PrinterContext)!;
   const { height, width } = usePageDimensions(size, orientation);
 
+  const wasRendered = useRef(false);
+
   useEffect(() => {
-    if (isLoading || !documentRef.current) return;
+    if (isPending || !isRendering || !documentRef.current) return;
+
+    if (wasRendered.current) {
+      onRender();
+      return;
+    }
 
     const articles = documentRef.current.querySelectorAll<HTMLElement>(
-      '[data-printer-type="page"], [data-printer-type="view"]'
+      '[data-printer-article="page"], [data-printer-article="pages"]'
     );
     let pagesCount = -1;
     articles.forEach((article) => {
-      const header = article.querySelector<HTMLElement>('[data-printer-component="header"]');
-      const footer = article.querySelector<HTMLElement>('[data-printer-component="footer"]');
-      const main = article.querySelector<HTMLElement>('[data-printer-component="main"]');
+      const header = article.querySelector<HTMLElement>('[data-printer-section="header"]');
+      const footer = article.querySelector<HTMLElement>('[data-printer-section="footer"]');
+      const main = article.querySelector<HTMLElement>('[data-printer-section="main"]');
 
       if (!main || !header || !footer) return;
 
@@ -53,7 +58,7 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
       placeholderElement.dataset.printerPlaceholder = 'true';
       article.insertBefore(placeholderElement, main);
 
-      if (article.dataset.printerType === 'page') return;
+      if (article.dataset.printerArticle === 'page') return;
 
       let distanceFromTop = height - footerHeight;
       if (article.previousElementSibling) {
@@ -205,16 +210,18 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
       });
     });
 
-    const { format = '#p / #c', formatPage = '#p', formatCount = '#c' } = pagination;
+    const { format, formatPage, formatTotal, style } = pagination;
 
+    documentRef.current.style.setProperty('--printer-pagination-total', `${pagesCount + 1}`);
     documentRef.current.style.setProperty(
-      '--pagination-content',
+      '--printer-pagination-content',
       `'${format
-        .replaceAll(formatPage, "'counter(printer-page)'")
-        .replaceAll(formatCount, String(pagesCount + 1))}'`
+        .replaceAll(formatPage, `'counter(printer-pagination-page, ${style})'`)
+        .replaceAll(formatTotal, `'counter(printer-pagination-total, ${style})'`)}'`
     );
 
-    onLoaded();
+    wasRendered.current = true;
+    onRender();
 
     return () => {
       const brokens =
@@ -236,14 +243,16 @@ const Content = ({ children, configuration, printOnly, onLoaded }: Props) => {
       clones.forEach((elem) => {
         elem.remove();
       });
+
+      wasRendered.current = false;
     };
-  }, [isLoading, height, pagination, onLoaded]);
+  }, [isPending, isRendering, height, pagination, onRender]);
   return (
     <div
       ref={documentRef}
       style={{ width: Math.floor(width) }}
-      data-printer-type="document"
-      data-printer-printonly={printOnly}
+      data-printer-type={`${documentType}-document`}
+      data-printer-printonly={true}
     >
       {children}
     </div>

@@ -1,5 +1,8 @@
 import React from 'react';
 
+import { DocumentConfiguration } from 'model';
+import { DeepPartial } from 'utilities/helperTypes';
+
 export type SectionProps = {
   children: React.ReactNode;
 };
@@ -9,31 +12,26 @@ export type ArticleProps = SectionProps & {
   footer?: React.ReactNode;
 };
 
-export type DocumentConfiguration = {
-  orientation?: Orientation;
-  size?: Size;
-  pagination?: Pagination;
-  isAsync?: boolean;
+export type PortalDocumentProps = {
+  configuration?: DeepPartial<DocumentConfiguration>;
+  header: React.ReactNode;
+  footer: React.ReactNode;
+  onRender?: () => void;
+  children: React.ReactNode;
 };
 
-export type Orientation = 'landscape' | 'portrait';
+export type DocumentRef = {
+  render: () => void;
+};
 
-export type Size = number | [number, number] | PageSize;
+type ScreenProps = {
+  isRendering: boolean;
+};
 
-export type PageSize =
-  | 'a3'
-  | 'a4'
-  | 'a5'
-  | 'b4'
-  | 'b5'
-  | 'jis-b4'
-  | 'jis-b5'
-  | 'letter'
-  | 'legal'
-  | 'ledger';
+type ScreenElement = React.ReactElement<ScreenProps, React.JSXElementConstructor<any>>;
 
-export type Pagination = {
-  format?: string;
-  formatPage?: string;
-  formatCount?: string;
+export type DocumentProps = PortalDocumentProps & {
+  title?: string;
+  renderOnInit?: boolean;
+  screen: ScreenElement | ((screenProps: ScreenProps) => ScreenElement);
 };

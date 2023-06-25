@@ -1,52 +1,59 @@
 @media print {
-  @page {
-    margin: 0;
-    size: a4;
-  }
-
   * {
     color-adjust: exact;
+    print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
 }
 
-body {
+body:has([data-printer-type='static-document']) {
   margin: 0;
   overflow: hidden;
 }
 
-[data-printer-type='document'] {
-  --pagination-content: '';
-  counter-reset: printer-page;
+@media screen {
+  [data-printer-type='portal-document'] {
+    position: absolute;
+  }
 }
 
-[data-printer-type='page'] {
+[data-printer-type='static-document'],
+[data-printer-type='portal-document'] {
+  --pagination-content: '';
+  counter-reset: printer-pagination-page printer-pagination-total var(--printer-pagination-total);
+}
+
+[data-printer-article='page'] {
   height: 100vh;
   overflow: hidden;
 }
 
-[data-printer-type='view'] {
+[data-printer-article='pages'] {
   overflow-x: hidden;
 }
 
-[data-printer-type='page']:not(:last-child),
-[data-printer-type='view']:not(:last-child) {
+[data-printer-article]:not(:last-child) {
   break-after: page;
 }
 
-[data-printer-component='header'],
-[data-printer-component='footer'] {
+[data-printer-section='header'],
+[data-printer-section='footer'] {
   position: absolute;
   left: 0;
   right: 0;
+  z-index: 1;
 }
 
-[data-printer-component='header'] {
-  counter-increment: printer-page;
+[data-printer-section='main'] {
+  z-index: 0;
+}
+
+[data-printer-section='header'] {
+  counter-increment: printer-pagination-page;
 }
 
 [data-printer-component='pagination']::before {
-  content: var(--pagination-content);
+  content: var(--printer-pagination-content);
 }
 
 @media print {
@@ -62,5 +69,11 @@ body {
     visibility: hidden;
     overflow: hidden;
     height: 0;
+  }
+}
+
+@media print {
+  body:has(> [data-printer-type='portal']) > :not([data-printer-type='portal']) {
+    display: none;
   }
 }

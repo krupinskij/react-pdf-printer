@@ -4,6 +4,10 @@
   "singleQuote": true,
   "tabWidth": 2,
   "trailingComma": "es5",
-  "importOrder": ["<THIRD_PARTY_MODULES>", "^(components|context|hooks|utilities)/?", "^[./]"],
+  "importOrder": [
+    "<THIRD_PARTY_MODULES>",
+    "^(components|context|hooks|model|utilities)/?",
+    "^[./]"
+  ],
   "importOrderSeparation": true
 }
