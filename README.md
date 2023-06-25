@@ -17,6 +17,11 @@ This library provides control over:
 - dealing with asynchronous content (e.g. fetching data, loading images),
 - adding header and footer to every page with information about current page and number of all pages
 
+## Example usage
+
+- [github pages](https://krupinskij.github.io/react-pdf-printer-example)
+- [github repo](https://github.com/krupinskij/react-pdf-printer-example)
+
 ## Installation
 
 ```bash
@@ -61,7 +66,7 @@ Printer provider configurating every pdf document (some fields can later be over
 
 Document component configurating and wrapping content of the pdf component.
 
-**_NOTE_**: This component is intended to be the only and top level component of the route (see example)
+**_NOTE_**: This component is intended to be the only and top level component of the route (see [example usage](#example-usage))
 
 | Name                     | Desc                                                                                    | Type                                                                        | Required | Default value                                                    |
 | ------------------------ | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------- |
@@ -81,7 +86,7 @@ Document component configurating and wrapping content of the pdf component.
 
 Document component configurating and wrapping content of the pdf component.
 
-This component allows to render pdf when other content is visible (see example)
+This component allows to render pdf when other content is visible (see [example usage](#example-usage))
 
 | Name                     | Desc                                                                   | Type                                                                        | Required | Default value                                                    |
 | ------------------------ | ---------------------------------------------------------------------- | --------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------- |
