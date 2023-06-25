@@ -1,5 +1,3 @@
-import React from 'react';
-
 export type Orientation = 'landscape' | 'portrait';
 
 export type Size = number | [number, number] | PageSize;
@@ -16,7 +14,7 @@ export type PageSize =
   | 'legal'
   | 'ledger';
 
-export type Pagination = {
+export type PaginationConfiguration = {
   format: string;
   formatPage: string;
   formatTotal: string;
@@ -26,13 +24,8 @@ export type Pagination = {
 export type PrinterConfiguration = {
   orientation: Orientation;
   size: Size;
-  pagination: Pagination;
+  pagination: PaginationConfiguration;
   useAsync: boolean;
 };
 
 export type DocumentConfiguration = Omit<PrinterConfiguration, 'orientation' | 'size'>;
-
-export type PageProps = {
-  header?: React.ReactNode;
-  footer?: React.ReactNode;
-};

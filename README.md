@@ -50,7 +50,7 @@ Printer provider configurating every pdf document (some fields can later be over
 | configuration.useAsync               | Enable async data fetching (see [usePrinter](#useprinter))                                                                                                                                                                              | boolean                                                                                                                       | no       | false         |
 | configuration.size                   | Size of the document according to [mdn](https://developer.mozilla.org/en-US/docs/Web/CSS/@page/size#values)                                                                                                                             | number \| [number, number] \| 'a3' \| 'a4' \| 'a5' \| 'b4' \| 'b5' \| 'jis-b4' \| 'jis-b5' \| 'letter' \| 'legal' \| 'ledger' | no       | 'a4'          |
 | configuration.orientation            | Orientation of the document                                                                                                                                                                                                             | 'landscape' \| 'portrait'                                                                                                     | no       | 'portrait'    |
-| configuration.pagination             | Configuration of pagination                                                                                                                                                                                                             | Pagination                                                                                                                    | no       | (see below)   |
+| configuration.pagination             | Configuration of pagination                                                                                                                                                                                                             | PaginationConfiguration                                                                                                       | no       | (see below)   |
 | configuration.pagination.format      | Text of the paging                                                                                                                                                                                                                      | string                                                                                                                        | no       | '#p / #t'     |
 | configuration.pagination.formatPage  | Token in `format` which later will be replaced by current page                                                                                                                                                                          | string                                                                                                                        | no       | '#p'          |
 | configuration.pagination.formatTotal | Token in `format` which later will be replaced by number of all pages                                                                                                                                                                   | string                                                                                                                        | no       | '#t'          |
@@ -72,7 +72,7 @@ Document component configurating and wrapping content of the pdf component.
 | screen                   | Hides document view from the user and show the substitute screen                        | React.ReactNode \| (({ isPrinting }) => React.ReactNode)                    | yes      | ---                                                              |
 | configuration            | Configuration of the document                                                           | DocumentConfiguration = Omit<PrinterConfiguration, 'orientation' \| 'size'> | no       | (see below)                                                      |
 | configuration.useAsync   | Enable async data fetching (see [PrinterProvider](#PrinterProvider))                    | boolean                                                                     | no       | ([PrinterProvider](#PrinterProvider)'s configuration.useAsync)   |
-| configuration.pagination | Configuration for pagination (see [PrinterProvider](#PrinterProvider))                  | Pagination                                                                  | no       | ([PrinterProvider](#PrinterProvider)'s configuration.pagination) |
+| configuration.pagination | Configuration for pagination (see [PrinterProvider](#PrinterProvider))                  | PaginationConfiguration                                                     | no       | ([PrinterProvider](#PrinterProvider)'s configuration.pagination) |
 | onRender                 | Function fired after rendering pdf document                                             | () => void                                                                  | no       | window.print                                                     |
 | renderOnInit             | Flag indicating if document should be rendered on init (or on user action (see `ref`))  | boolean                                                                     | no       | true                                                             |
 | ref                      | Reference prop with render function (can be used when `renderOnInit` is set to `false`) | DocumentRef                                                                 | no       | ---                                                              |
@@ -90,7 +90,7 @@ This component allows to render pdf when other content is visible (see example)
 | children                 | Content of the document                                                | React.ReactNode                                                             | yes      | ---                                                              |
 | configuration            | Configuration of the document                                          | DocumentConfiguration = Omit<PrinterConfiguration, 'orientation' \| 'size'> | no       | (see below)                                                      |
 | configuration.useAsync   | Enable async data fetching (see [PrinterProvider](#PrinterProvider))   | boolean                                                                     | no       | ([PrinterProvider](#PrinterProvider)'s configuration.useAsync)   |
-| configuration.pagination | Configuration for pagination (see [PrinterProvider](#PrinterProvider)) | Pagination                                                                  | no       | ([PrinterProvider](#PrinterProvider)'s configuration.pagination) |
+| configuration.pagination | Configuration for pagination (see [PrinterProvider](#PrinterProvider)) | PaginationConfiguration                                                     | no       | ([PrinterProvider](#PrinterProvider)'s configuration.pagination) |
 | onRender                 | Function fired after rendering pdf document                            | () => void                                                                  | no       | window.print                                                     |
 | ref                      | Reference prop with render function                                    | DocumentRef                                                                 | no       | ---                                                              |
 
@@ -146,19 +146,21 @@ const { isPrinter, isRendering, subscribe, run } = usePrinter(key?: string);
 ```tsx
 const MyComponent = () => {
   const { subscribe, run } = usePrinter('my-unique-key');
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     subscribe();
-
-    // document won't be printed until 10 seconds pass
-    const timeout = setTimeout(() => {
-      run();
-    }, 10_000);
-
-    return () => clearTimeout(timeout);
+    fetch('...')
+      .then(resp => resp.json())
+      .then(resp => {
+        setData(resp);
+      })
+      .finally(() => {
+        run()
+      })
   }, [subscribe, run]);
 
-  return <div>Some content</div>;
+  return <div>{ data.map(item => ...) }</div>;
 };
 ```
 
