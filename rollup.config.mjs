@@ -1,12 +1,10 @@
+import commonJS from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
+import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
-import commonJS from 'rollup-plugin-commonjs';
 import dts from 'rollup-plugin-dts';
 import external from 'rollup-plugin-peer-deps-external';
 import postcss from 'rollup-plugin-postcss';
-import { terser } from 'rollup-plugin-terser';
-
-const packageJSON = require('./package.json');
 
 const resolveNonExternals = ({ dir = '', extension = '', nonExternals = [] }) => ({
   resolveId: (source) => {
@@ -21,13 +19,12 @@ export default [
     input: 'src/index.ts',
     output: [
       {
-        file: packageJSON.main,
+        file: `${process.env.DIR}/cjs/index.js`,
         format: 'cjs',
         sourcemap: true,
-        name: 'ReactPdfPrinter',
       },
       {
-        file: packageJSON.module,
+        file: `${process.env.DIR}/esm/index.js`,
         format: 'esm',
         sourcemap: true,
       },
@@ -49,11 +46,11 @@ export default [
     plugins: [postcss({ extract: 'style.css' })],
   },
   {
-    input: 'dist/esm/types/index.d.ts',
-    output: [{ file: 'dist/index.d.ts', format: 'esm' }],
+    input: `${process.env.DIR}/esm/types/index.d.ts`,
+    output: [{ file: `${process.env.DIR}/index.d.ts`, format: 'esm' }],
     plugins: [
       resolveNonExternals({
-        dir: 'dist/esm/types',
+        dir: `${process.env.DIR}/esm/types`,
         extension: '.d.ts',
         nonExternals: ['components', 'context', 'hooks', 'utilities', 'model'],
       }),
