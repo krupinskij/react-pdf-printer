@@ -56,6 +56,11 @@ body:has([data-printer-type='static-document']) {
   content: var(--printer-pagination-content);
 }
 
+[data-printer-break='true'] {
+  width: 9999999999px !important;
+  clear: both !important;
+}
+
 @media print {
   [data-printer-screenonly='true'] {
     visibility: hidden;
