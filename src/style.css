@@ -56,7 +56,7 @@ body:has([data-printer-type='static-document']) {
   content: var(--printer-pagination-content);
 }
 
-[data-printer-break='true'] {
+[data-printer-placeholder='true'] {
   width: 9999999999px !important;
   clear: both !important;
 }
