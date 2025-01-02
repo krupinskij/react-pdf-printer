@@ -31,7 +31,7 @@ $ yarn add react-pdf-printer
 
 ## Usage
 
-Importing
+### Importing
 
 ```typescript
 import {
@@ -44,6 +44,16 @@ import {
   usePrinter,
 } from 'react-pdf-printer';
 ```
+
+### Styles
+
+Import `style.css` file into some base css stylesheet in you application. Like [here](https://github.com/krupinskij/react-pdf-printer-example/blob/master/src/index.css).
+
+```css
+@import url('/node_modules/react-pdf-printer/dist/style.css');
+```
+
+For more information regarding styling look for [important notes](#important-notes).
 
 ### PrinterProvider
 
@@ -214,9 +224,57 @@ This attribute takes a positive natural number (default value is `1`). Floating 
 </div>
 ```
 
-## Notes
+## Important notes
 
-Due to poor browser compatibility e.g. lack of `vh` css unit in context of `@media print` doesn't work on Firefox.
+### Compatibility
+
+Due to poor browser compatibility, e.g. lack of `vh` css unit in context of `@media print`, this library doesn't work on Firefox.
+
+### Styling
+
+Although there is [`@media print`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media#print) rule for document styling **it is highly not recommended** to use this, especially for properties that can cause layout shift eg. `width`, `margin`, `border-width` and so on.
+
+If you want to style elements differently in context of print, please use `isPrinter` from [`usePrinter`](#useprinter) hook.
+
+Example patters:
+
+```css
+/* CSS Modules */
+.element {
+  background-color: red;
+  height: 40px;
+}
+.element.print {
+  height: 20px;
+}
+```
+
+```tsx
+/* CSS Modules */
+import classNames from 'classnames';
+
+import styles from './MyComponent.module.css';
+
+const MyComponent = () => {
+  const { isPrinter } = usePrinter();
+  return <div classname={classnames(styles.element, { [styles.print]: isPrinter })} />;
+};
+```
+
+```tsx
+/* styled-components */
+import styled from 'styled-components';
+
+const MyElement = styled.div<{ $print: boolean }>`
+  background-color: red;
+  height: ${({ $print }) => ($print ? '20px' : '40px')};
+`;
+
+const MyComponent = () => {
+  const { isPrinter } = usePrinter();
+  return <MyElement $print={isPrinter} />;
+};
+```
 
 ## Development
 
