@@ -17,6 +17,8 @@ type DivisibleElement = {
   bottomChild: HTMLElement;
 };
 
+const pageHeight = 'calc(100vh + 1px)';
+
 const Content = ({ documentType, children, isRendering, onRender }: Props) => {
   const { configuration, isPending } = useDocumentContext();
   const { pagination, orientation, size } = configuration;
@@ -50,8 +52,8 @@ const Content = ({ documentType, children, isRendering, onRender }: Props) => {
       const headerHeight = header.clientHeight;
       const footerHeight = footer.clientHeight;
 
-      header.style.top = `${pagesCount * 100}vh`;
-      footer.style.top = `calc(${(pagesCount + 1) * 100}vh - ${footerHeight}px)`;
+      header.style.top = `calc(${pagesCount} * ${pageHeight})`;
+      footer.style.top = `calc(calc(${pagesCount + 1} * ${pageHeight}) - ${footerHeight}px)`;
 
       const placeholderElement = document.createElement('div');
       placeholderElement.style.height = `${headerHeight}px`;
@@ -198,12 +200,12 @@ const Content = ({ documentType, children, isRendering, onRender }: Props) => {
           }
 
           const newHeader = header.cloneNode(true) as HTMLElement;
-          newHeader.style.top = `${pagesCount * 100}vh`;
+          newHeader.style.top = `calc(${pagesCount} * ${pageHeight})`;
           newHeader.dataset.printerClone = 'true';
           article.appendChild(newHeader);
 
           const newFooter = footer.cloneNode(true) as HTMLElement;
-          newFooter.style.top = `calc(${(pagesCount + 1) * 100}vh - ${footerHeight}px)`;
+          newFooter.style.top = `calc(calc(${pagesCount + 1} * ${pageHeight}) - ${footerHeight}px)`;
           newFooter.dataset.printerClone = 'true';
           article.appendChild(newFooter);
         }
