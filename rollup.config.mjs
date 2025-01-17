@@ -42,7 +42,7 @@ export default [
   },
   {
     input: 'src/style.css',
-    output: [{ dir: 'dist' }],
+    output: [{ dir: process.env.DIR }],
     plugins: [postcss({ extract: 'style.css' })],
   },
   {
